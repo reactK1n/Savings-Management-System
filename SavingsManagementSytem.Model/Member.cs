@@ -10,13 +10,11 @@ namespace SavingsManagementSystem.Model
 		//navigation propertie
 		public ApplicationUser User { get; set; }
 
-		public ICollection<OTP>? OTP { get; set; }
+		public ICollection<OTP> OTP { get; set; }
 
-		public ICollection<Saving>? Savings { get; set; }
+		public ICollection<Saving> Savings { get; set; }
 
-		public ICollection<Transaction>? Transactions { get; set; }
-
-
+		public ICollection<Transaction> Transactions { get; set; }
 
 	}
 }
