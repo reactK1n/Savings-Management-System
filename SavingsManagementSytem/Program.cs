@@ -1,4 +1,5 @@
 using SavingsManagementSystem.Extensions;
+using SavingsManagementSystem.Policies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ builder.Services.AddDbContextAndConfigurations(builder.Configuration);
 builder.Services.AddIdentityConfig();
 //Configure Authentication
 builder.Services.AddAuthenticationConfig(builder.Configuration);
+//adding policy authourization
+builder.Services.AddPolicyAuthorization();
 
 
 
