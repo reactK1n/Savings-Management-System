@@ -1,3 +1,4 @@
+using SavingsManagementSystem.Data.AddToRole;
 using SavingsManagementSystem.Extensions;
 using SavingsManagementSystem.Policies;
 
@@ -16,8 +17,13 @@ builder.Services.AddAuthenticationConfig(builder.Configuration);
 builder.Services.AddPolicyAuthorization();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+//swagger configuration for authorization
 builder.Services.AddSwaggerConfig();
 
+builder.Services.AddCors(c =>
+{
+	c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+});
 
 
 var app = builder.Build();
@@ -29,6 +35,7 @@ if (app.Environment.IsDevelopment())
 	app.UseSwaggerUI();
 }
 
+app.InitRoles();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
