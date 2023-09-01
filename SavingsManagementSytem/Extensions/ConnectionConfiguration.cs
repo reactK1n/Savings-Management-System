@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SavingsManagementSystem.Data;
+using SavingsManagementSystem.Data.Contexts;
 
 namespace SavingsManagementSystem.Extensions
 {
-	public static class ConnectionConfiguration
+    public static class ConnectionConfiguration
 	{
 		public static void AddDbContextAndConfigurations(this IServiceCollection services, IConfiguration config)
 		{
