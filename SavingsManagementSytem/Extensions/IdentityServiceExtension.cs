@@ -4,7 +4,7 @@ using SavingsManagementSystem.Model;
 
 namespace SavingsManagementSystem.Extensions
 {
-	public static class IdentityService
+	public static class IdentityServiceExtension
 	{
 		public static void AddIdentityConfig(this IServiceCollection services)
 		{

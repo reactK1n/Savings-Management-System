@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SavingsManagementSystem.Extensions
 {
-	public static class AuthenticationService
+	public static class AuthenticationServiceExtension
 	{
 		public static void AddAuthenticationConfig(this IServiceCollection services, IConfiguration configuration)
 		{

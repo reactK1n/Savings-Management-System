@@ -6,9 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 //register dbContext
 builder.Services.AddDbContextAndConfigurations(builder.Configuration);
 //Configure Identity options
@@ -17,6 +14,9 @@ builder.Services.AddIdentityConfig();
 builder.Services.AddAuthenticationConfig(builder.Configuration);
 //adding policy authourization
 builder.Services.AddPolicyAuthorization();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerConfig();
 
 
 
