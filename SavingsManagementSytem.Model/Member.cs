@@ -14,6 +14,7 @@ namespace SavingsManagementSystem.Model
 
 		public ICollection<Saving> Savings { get; set; }
 
+		public ICollection<Transaction> Transactions { get; set; }
 
 	}
 }
