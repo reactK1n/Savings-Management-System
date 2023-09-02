@@ -6,7 +6,7 @@ namespace SavingsManagementSystem.Repository.Implementations
 {
 	public class GenericRepository<T> : IGenericRepository<T> where T : class
 	{
-		public readonly DbSet<T> _dbSet;
+		private readonly DbSet<T> _dbSet;
 		public GenericRepository(SavingsDBContext context)
 		{
 			_dbSet = context.Set<T>();
