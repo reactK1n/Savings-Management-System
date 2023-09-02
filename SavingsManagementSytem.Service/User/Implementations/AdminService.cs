@@ -13,13 +13,11 @@ namespace SavingsManagementSystem.Service.User.Implementations
 
 		private readonly IAuthenticationService _auth;
 		private readonly IUnitOfWork _unit;
-		private readonly IHttpContextAccessor _httpContextAccessor;
 
-		public AdminService(IAuthenticationService auth, IUnitOfWork unit, IHttpContextAccessor httpContextAccessor)
+		public AdminService(IAuthenticationService auth, IUnitOfWork unit)
 		{
 			_unit = unit;
 			_auth = auth;
-			_httpContextAccessor = httpContextAccessor;
 		}
 
 		public async Task<RegistrationResponse> RegisterAsync(RegistrationRequest request)
