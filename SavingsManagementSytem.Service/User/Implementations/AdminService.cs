@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using SavingsManagementSystem.Common.DTOs;
+﻿using SavingsManagementSystem.Common.DTOs;
 using SavingsManagementSystem.Common.UserRole;
 using SavingsManagementSystem.Model;
 using SavingsManagementSystem.Repository.UnitOfWork.Interfaces;
