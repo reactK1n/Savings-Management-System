@@ -26,6 +26,7 @@ namespace SavingsManagementSystem.Service.User.Implementations
 				FirstName = request.FirstName,
 				LastName = request.LastName,
 				Email = request.Email,
+				UserName = request.Username,
 				EmailConfirmed = true
 			};
 
@@ -37,6 +38,7 @@ namespace SavingsManagementSystem.Service.User.Implementations
 				Id = user.Id,
 				FirstName = request.FirstName,
 				LastName = request.LastName,
+				Username = request.Username,
 				Email = request.Email
 			};
 

@@ -9,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 //register dbContext
 builder.Services.AddDbContextAndConfigurations(builder.Configuration);
+//adding dependency injection container
+builder.Services.AddDependencyInjection();
 //Configure Identity options
 builder.Services.AddIdentityConfig();
 //Configure Authentication
@@ -19,6 +21,7 @@ builder.Services.AddPolicyAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 //swagger configuration for authorization
 builder.Services.AddSwaggerConfig();
+
 
 builder.Services.AddCors(c =>
 {
@@ -38,6 +41,7 @@ if (app.Environment.IsDevelopment())
 app.InitRoles();
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

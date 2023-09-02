@@ -10,7 +10,7 @@ namespace SavingsManagementSystem.Model
 
 		public string ImageUri { get; set; }
 
-		public string AddressId { get; set; }
+		public string? AddressId { get; set; }
 		//nav property
 
 		public Address Address { get; set; }

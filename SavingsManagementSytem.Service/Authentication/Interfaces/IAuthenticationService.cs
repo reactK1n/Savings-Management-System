@@ -8,6 +8,6 @@ namespace SavingsManagementSystem.Service.Authentication.Interfaces
 	{
 		Task<RegistrationResponse> Register(ApplicationUser user, string password, UserRole role);
 
-		Task<LoginResponse> Login(LoginRequest loginRequest)
+		Task<LoginResponse> Login(LoginRequest loginRequest);
 	}
 }
