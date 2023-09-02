@@ -13,7 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SavingsManagementSytem.Common\SavingsManagementSystem.Common.csproj" />
     <ProjectReference Include="..\SavingsManagementSytem.Model\SavingsManagementSystem.Model.csproj" />
+    <ProjectReference Include="..\SavingsManagementSytem.Repository\SavingsManagementSystem.Repository.csproj" />
   </ItemGroup>
 
 </Project>
