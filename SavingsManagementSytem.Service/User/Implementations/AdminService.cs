@@ -30,7 +30,7 @@ namespace SavingsManagementSystem.Service.User.Implementations
 				EmailConfirmed = true
 			};
 
-			var createUser = await _auth.Register(user, request.Password, UserRole.Admin);
+			await _auth.Register(user, request.Password, UserRole.Admin);
 			await _unit.SaveChangesAsync();
 
 			var response = new RegistrationResponse
