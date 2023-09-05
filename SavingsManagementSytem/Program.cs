@@ -1,14 +1,22 @@
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
 using SavingsManagementSystem.Data.AddToRole;
 using SavingsManagementSystem.Extensions;
 using SavingsManagementSystem.Policies;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+	.AddFluentValidation(fv =>
+	fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
+
 //register dbContext
 builder.Services.AddDbContextAndConfigurations(builder.Configuration);
+//adding dependency injection container
+builder.Services.AddDependencyInjection();
 //Configure Identity options
 builder.Services.AddIdentityConfig();
 //Configure Authentication
@@ -19,6 +27,7 @@ builder.Services.AddPolicyAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 //swagger configuration for authorization
 builder.Services.AddSwaggerConfig();
+
 
 builder.Services.AddCors(c =>
 {
@@ -38,6 +47,7 @@ if (app.Environment.IsDevelopment())
 app.InitRoles();
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
