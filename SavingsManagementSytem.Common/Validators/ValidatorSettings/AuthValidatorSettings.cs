@@ -24,5 +24,17 @@ namespace SavingsManagementSystem.Common.Validators.ValidatorSettings
 
 			return options;
 		}
+
+		public static IRuleBuilder<T, string> PassWord<T>(this IRuleBuilder<T, string> ruleBuilder)
+		{
+			var options = ruleBuilder.NotNull().WithMessage("Password cannot be null")
+				.NotEmpty().WithMessage("password must be provided")
+				.Matches(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@#$%^&+=!])(?!.*\s).+$")
+				.WithMessage("password must contain character, letter and Number")
+				.MinimumLength(8);
+
+			return options;
+		}
+
 	}
 }

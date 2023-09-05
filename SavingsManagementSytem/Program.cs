@@ -1,12 +1,18 @@
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
 using SavingsManagementSystem.Data.AddToRole;
 using SavingsManagementSystem.Extensions;
 using SavingsManagementSystem.Policies;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+	.AddFluentValidation(fv =>
+	fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
+
 //register dbContext
 builder.Services.AddDbContextAndConfigurations(builder.Configuration);
 //adding dependency injection container

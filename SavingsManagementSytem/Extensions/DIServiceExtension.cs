@@ -1,4 +1,7 @@
-﻿using SavingsManagementSystem.Repository.Implementations;
+﻿using FluentValidation;
+using SavingsManagementSystem.Common.DTOs;
+using SavingsManagementSystem.Common.Validators.AuthenticationValidator;
+using SavingsManagementSystem.Repository.Implementations;
 using SavingsManagementSystem.Repository.Interfaces;
 using SavingsManagementSystem.Repository.UnitOfWork.Implementations;
 using SavingsManagementSystem.Repository.UnitOfWork.Interfaces;
@@ -24,6 +27,10 @@ namespace SavingsManagementSystem.Extensions
 			services.AddScoped<IOtpRepository, OtpRepository>();
 			services.AddScoped<ITransactionRepository, TransactionRepository>();
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+			//registering Fluent validations injection class
+			services.AddScoped<IValidator<LoginRequest>, LoginRequestValidation>();
+			services.AddScoped<IValidator<RegistrationRequest>, RegistrationRequestValidation>();
 		}
 	}
 }
