@@ -4,6 +4,6 @@ namespace SavingsManagementSystem.Service.Mail.Interfaces
 {
 	public interface IMailService
 	{
-		Task<string> SendMailAsync(MailResquest resquest);
+		Task<string> SendEmailAsync(MailResquest resquest);
 	}
 }

@@ -5,7 +5,7 @@ namespace SavingsManagementSystem.Service.Mail.Implementations
 {
 	public class MailService : IMailService
 	{
-		public async Task<string> SendMailAsync(MailResquest resquest)
+		public async Task<string> SendEmailAsync(MailResquest resquest)
 		{
 			var response = "Email Sent Successfully";
 			return response;

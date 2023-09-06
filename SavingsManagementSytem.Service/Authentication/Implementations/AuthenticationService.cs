@@ -80,7 +80,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			var user = await _userManager.FindByEmailAsync(email);
 			if (user == null)
 			{
-				throw new ArgumentNullException($"Email {email} provided is Invalid");
+				throw new ArgumentNullException($"Email {email} provided does not exist in our Database");
 			};
 			var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 			var encodeToken = TokenConverter.EncodeToken(token);
@@ -95,8 +95,35 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				//Body = mailBody,
 				RecipientEmail = email
 			};
-			var response = await _mailService.SendMailAsync(mailRequest);
+			var response = await _mailService.SendEmailAsync(mailRequest);
 			return response;
-		};
+		}
+
+		public async Task<string> ConfirmEmail(ConfirmEmailRequest request)
+		{
+			var user = await _userManager.FindByEmailAsync(request.Email);
+			if (user == null)
+			{
+				throw new ArgumentNullException("Email {request.Email} Provided is Invalid ");
+			}
+
+			var decodedToken = TokenConverter.DecodeToken(request.Token);
+			if (decodedToken == null)
+			{
+				throw new ArgumentNullException("Invalid Token Provided");
+			}
+			var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+			var errors = string.Empty;
+			if (!result.Succeeded)
+			{
+                foreach (var error in result.Errors)
+                {
+					errors += error + Environment.NewLine;
+                }
+				throw new InvalidOperationException(errors);
+            }
+
+			return "Email Confirmed Successfully";
+		}
 	}
 }
