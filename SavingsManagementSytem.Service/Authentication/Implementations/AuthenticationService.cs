@@ -33,10 +33,10 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 			var response = new RegistrationResponse
 			{
-				Id = user.Id,
 				FirstName = user.FirstName,
 				LastName = user.LastName,
-				Email = user.Email
+				Email = user.Email,
+				Username = user.UserName
 
 			};
 
@@ -63,6 +63,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				FirstName = user.FirstName,
 				LastName = user.LastName,
 				Email = user.Email,
+				Username = user.UserName,
 				Token = token
 			};
 
