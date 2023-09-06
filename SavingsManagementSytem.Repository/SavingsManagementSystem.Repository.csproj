@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SavingsManagementSytem.Data\SavingsManagementSystem.Data.csproj" />
+    <ProjectReference Include="..\SavingsManagementSytem.Model\SavingsManagementSystem.Model.csproj" />
   </ItemGroup>
 
 </Project>
