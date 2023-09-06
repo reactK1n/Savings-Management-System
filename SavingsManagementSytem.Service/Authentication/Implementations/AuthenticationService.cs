@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using SavingsManagementSystem.Common.DTOs;
-using SavingsManagementSystem.Common.Utilities;
 using SavingsManagementSystem.Common.UserRole;
+using SavingsManagementSystem.Common.Utilities;
 using SavingsManagementSystem.Model;
 using SavingsManagementSystem.Service.Authentication.Interfaces;
-using System.Net;
 using SavingsManagementSystem.Service.Mail.Interfaces;
-using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 
 namespace SavingsManagementSystem.Service.Authentication.Implementations
@@ -79,7 +78,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			return response;
 		}
 
-		public async Task<string> ForgetPassword(string email)
+		public async Task<string> ForgetPasswordAsync(string email)
 		{
 			var user = await _userManager.FindByEmailAsync(email);
 			if (user == null)
@@ -103,7 +102,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			return response;
 		}
 
-		public async Task<string> ConfirmEmail(ConfirmEmailRequest request)
+		public async Task<string> ConfirmEmailAsync(ConfirmEmailRequest request)
 		{
 			var user = await _userManager.FindByEmailAsync(request.Email);
 			if (user == null)
@@ -120,32 +119,59 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			var errors = string.Empty;
 			if (!result.Succeeded)
 			{
-                foreach (var error in result.Errors)
-                {
+				foreach (var error in result.Errors)
+				{
 					errors += error + Environment.NewLine;
-                }
+				}
 				throw new InvalidOperationException(errors);
-            }
+			}
 
 			return "Email Confirmed Successfully";
 		}
 
-		public async Task<string> ChangePassword(ChangePasswordRequest request)
+		public async Task<string> ChangePasswordAsync(ChangePasswordRequest request)
 		{
 			var userId = _httpContextAccessor.HttpContext.User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier).Value;
 			var user = await _userManager.FindByIdAsync(userId);
 			if (user == null)
 			{
 				throw new ArgumentNullException("Invalid Id Provided");
-			} 
+			}
 			var isPasswordMatch = await _userManager.CheckPasswordAsync(user, request.OldPassword);
-            if (!isPasswordMatch)
-            {
+			if (!isPasswordMatch)
+			{
 				throw new Exception("Provided Password is not Correct, Check your Old Password");
-            }
-            await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
+			}
+			await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
 
 			return "Password Changed Successfully";
-        }
+		}
+
+		public async Task<string> ResetPassword(ResetPasswordRequest request)
+		{
+			var user = await _userManager.FindByEmailAsync(request.Email);
+			if (user == null)
+			{
+				throw new ArgumentNullException("Email Provided is Invalid");
+			}
+			var isPasswordMatch = await _userManager.CheckPasswordAsync(user, request.Password);
+			if (isPasswordMatch)
+			{
+				throw new ArgumentNullException("you can not use your old password");
+			}
+			var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+			var result = await _userManager.ResetPasswordAsync(user, token, request.Password);
+			var errors = string.Empty;
+			if (!result.Succeeded)
+			{
+				foreach (var error in result.Errors)
+				{
+					errors += error + Environment.NewLine;
+				}
+				throw new InvalidOperationException(errors);
+			}
+
+			return "Password Changed Successfully";
+		}
 	}
 }

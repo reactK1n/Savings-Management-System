@@ -9,5 +9,14 @@ namespace SavingsManagementSystem.Service.Authentication.Interfaces
 		Task<RegistrationResponse> Register(ApplicationUser user, string password, UserRole role);
 
 		Task<LoginResponse> Login(LoginRequest loginRequest);
+
+		Task<string> ForgetPasswordAsync(string email);
+
+		Task<string> ConfirmEmailAsync(ConfirmEmailRequest request);
+
+		Task<string> ChangePasswordAsync(ChangePasswordRequest request);
+
+		Task<string> ResetPassword(ResetPasswordRequest request);
+
 	}
 }
