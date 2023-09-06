@@ -6,6 +6,8 @@ using SavingsManagementSystem.Model;
 using SavingsManagementSystem.Service.Authentication.Interfaces;
 using System.Net;
 using SavingsManagementSystem.Service.Mail.Interfaces;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace SavingsManagementSystem.Service.Authentication.Implementations
 {
@@ -14,12 +16,14 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly ITokenService _token;
 		private readonly IMailService _mailService;
+		private readonly IHttpContextAccessor _httpContextAccessor;
 
-		public AuthenticationService(UserManager<ApplicationUser> userManager, ITokenService token, IMailService mailService)
+		public AuthenticationService(UserManager<ApplicationUser> userManager, ITokenService token, IMailService mailService, IHttpContextAccessor httpContextAccessor)
 		{
 			_userManager = userManager;
 			_token = token;
 			_mailService = mailService;
+			_httpContextAccessor = httpContextAccessor;
 		}
 
 		public async Task<RegistrationResponse> Register(ApplicationUser user, string password, UserRole role)
@@ -125,5 +129,23 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 			return "Email Confirmed Successfully";
 		}
+
+		public async Task<string> ChangePassword(ChangePasswordRequest request)
+		{
+			var userId = _httpContextAccessor.HttpContext.User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier).Value;
+			var user = await _userManager.FindByIdAsync(userId);
+			if (user == null)
+			{
+				throw new ArgumentNullException("Invalid Id Provided");
+			} 
+			var isPasswordMatch = await _userManager.CheckPasswordAsync(user, request.OldPassword);
+            if (!isPasswordMatch)
+            {
+				throw new Exception("Provided Password is not Correct, Check your Old Password");
+            }
+            await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
+
+			return "Password Changed Successfully";
+        }
 	}
 }

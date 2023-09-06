@@ -16,6 +16,8 @@ namespace SavingsManagementSystem.Extensions
 	{
 		public static void AddDependencyInjection(this IServiceCollection services)
 		{
+			//add httpContext accessor
+			services.AddHttpContextAccessor();
 			//Sevices DI
 			services.AddScoped<IAdminService, AdminService>();
 			services.AddScoped<IAuthenticationService, AuthenticationService>();
@@ -32,6 +34,12 @@ namespace SavingsManagementSystem.Extensions
 			services.AddScoped<IValidator<LoginRequest>, LoginRequestValidation>();
 			services.AddScoped<IValidator<RegistrationRequest>, RegistrationRequestValidation>();
 			services.AddScoped<IValidator<MailResquest>, MailRequestValidator>();
+			services.AddScoped<IValidator<ConfirmEmailRequest>, ConfirmEmailRequestValidator>();
+			services.AddScoped<IValidator<ChangePasswordRequest>, ChangePasswordRequestValidator>();
+
+
+
+
 
 		}
 	}
