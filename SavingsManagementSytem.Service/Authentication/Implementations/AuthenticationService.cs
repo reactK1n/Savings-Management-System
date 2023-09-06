@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SavingsManagementSystem.Common.DTOs;
+using SavingsManagementSystem.Common.Utilities;
 using SavingsManagementSystem.Common.UserRole;
 using SavingsManagementSystem.Model;
 using SavingsManagementSystem.Service.Authentication.Interfaces;
+using System.Net;
+using SavingsManagementSystem.Service.Mail.Interfaces;
 
 namespace SavingsManagementSystem.Service.Authentication.Implementations
 {
@@ -10,11 +13,13 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly ITokenService _token;
+		private readonly IMailService _mailService;
 
-		public AuthenticationService(UserManager<ApplicationUser> userManager, ITokenService token)
+		public AuthenticationService(UserManager<ApplicationUser> userManager, ITokenService token, IMailService mailService)
 		{
 			_userManager = userManager;
 			_token = token;
+			_mailService = mailService;
 		}
 
 		public async Task<RegistrationResponse> Register(ApplicationUser user, string password, UserRole role)
@@ -69,5 +74,29 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 			return response;
 		}
+
+		public async Task<string> ForgetPassword(string email)
+		{
+			var user = await _userManager.FindByEmailAsync(email);
+			if (user == null)
+			{
+				throw new ArgumentNullException($"Email {email} provided is Invalid");
+			};
+			var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+			var encodeToken = TokenConverter.EncodeToken(token);
+			var userRole = await _userManager.GetRolesAsync(user);
+
+			//var mailBody = await EmailBodyBuilder.GetEmailBody(user, userRole.ToList(), emailTempPath: "StaticFiles/Html/ForgotPassword.html", linkName: "ResetPassword", encodedToken, controllerName: "Auth");
+
+
+			var mailRequest = new MailResquest()
+			{
+				Subject = "Reset Password",
+				//Body = mailBody,
+				RecipientEmail = email
+			};
+			var response = await _mailService.SendMailAsync(mailRequest);
+			return response;
+		};
 	}
 }
