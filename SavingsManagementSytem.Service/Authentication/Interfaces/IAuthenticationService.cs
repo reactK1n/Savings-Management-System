@@ -16,7 +16,7 @@ namespace SavingsManagementSystem.Service.Authentication.Interfaces
 
 		Task<string> ChangePasswordAsync(ChangePasswordRequest request);
 
-		Task<string> ResetPassword(ResetPasswordRequest request);
+		Task<string> ResetPasswordAsync(ResetPasswordRequest request);
 
 	}
 }

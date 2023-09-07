@@ -85,21 +85,19 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			{
 				throw new ArgumentNullException($"Email {email} provided does not exist in our Database");
 			};
-			var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-			var encodeToken = TokenConverter.EncodeToken(token);
-			var userRole = await _userManager.GetRolesAsync(user);
 
-			//var mailBody = await EmailBodyBuilder.GetEmailBody(user, userRole.ToList(), emailTempPath: "StaticFiles/Html/ForgotPassword.html", linkName: "ResetPassword", encodedToken, controllerName: "Auth");
-
-
-			var mailRequest = new MailResquest()
+			var htmlPath = @"C:\Users\User\Desktop\Repos\SavingsManagementSytem\SavingsManagementSytem\StaticFiles\Html\ForgetPassword.html";
+			var mailRequest = new MailRequest()
 			{
 				Subject = "Reset Password",
-				//Body = mailBody,
 				RecipientEmail = email
 			};
-			var response = await _mailService.SendEmailAsync(mailRequest);
-			return response;
+			var result = await _mailService.SendEmailAsync(mailRequest, htmlPath);
+            if (!result)
+            {
+				return "Email not Successful";
+            }
+            return "Sent Successfully";
 		}
 
 		public async Task<string> ConfirmEmailAsync(ConfirmEmailRequest request)
@@ -147,7 +145,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			return "Password Changed Successfully";
 		}
 
-		public async Task<string> ResetPassword(ResetPasswordRequest request)
+		public async Task<string> ResetPasswordAsync(ResetPasswordRequest request)
 		{
 			var user = await _userManager.FindByEmailAsync(request.Email);
 			if (user == null)
