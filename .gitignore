@@ -32,6 +32,8 @@ bld/
 [Oo]ut/
 [Ll]og/
 [Ll]ogs/
+/appsettings.json
+
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -361,3 +363,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+SavingsManagementSytem/appsettings.json
+SavingsManagementSytem/appsettings.[Dd]evelopment.json
+SavingsManagementSytem/Logs
+
+# End of https://www.gitignore.io/api/visualstudio

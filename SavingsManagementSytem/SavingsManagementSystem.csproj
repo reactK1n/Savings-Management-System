@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SavingsManagementSytem.Data\SavingsManagementSystem.Data.csproj" />
+    <ProjectReference Include="..\SavingsManagementSytem.Repository\SavingsManagementSystem.Repository.csproj" />
     <ProjectReference Include="..\SavingsManagementSytem.Service\SavingsManagementSystem.Service.csproj" />
   </ItemGroup>
 

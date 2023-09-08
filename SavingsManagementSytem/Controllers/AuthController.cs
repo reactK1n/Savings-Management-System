@@ -39,5 +39,59 @@ namespace SavingsManagementSystem.Controllers
 				return BadRequest();
 			}
 		}
+
+		[HttpPost]
+		[Route("forgetPassword")]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> ForgetPassword([FromQuery] string email)
+		{
+			try
+			{
+				var response = await _authServices.ForgetPasswordAsync(email);
+				if (response != null)
+				{
+					return Ok(response);
+				}
+				return BadRequest();
+			}
+			catch (ArgumentNullException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpPost]
+		[Route("ResetPassword")]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+		{
+			try
+			{
+				var response = await _authServices.ResetPasswordAsync(request);
+				if (response != null)
+				{
+					return Ok(response);
+				}
+				return BadRequest();
+			}
+			catch (ArgumentNullException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch (InvalidOperationException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch
+			{
+				return BadRequest();
+			}
+		}
 	}
 }
