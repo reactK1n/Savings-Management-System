@@ -24,9 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SavingsManagementSystem.Data\SavingsManagementSystem.Data.csproj" />
-    <ProjectReference Include="..\SavingsManagementSystem.Repository\SavingsManagementSystem.Repository.csproj" />
-    <ProjectReference Include="..\SavingsManagementSystem.Service\SavingsManagementSystem.Service.csproj" />
+    <ProjectReference Include="..\SavingsManagementSytem.Data\SavingsManagementSystem.Data.csproj" />
+    <ProjectReference Include="..\SavingsManagementSytem.Repository\SavingsManagementSystem.Repository.csproj" />
+    <ProjectReference Include="..\SavingsManagementSytem.Service\SavingsManagementSystem.Service.csproj" />
   </ItemGroup>
 
 </Project>
