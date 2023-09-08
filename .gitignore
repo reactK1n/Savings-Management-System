@@ -364,8 +364,8 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-SavingsManagementSytem/appsettings.json
-SavingsManagementSytem/appsettings.[Dd]evelopment.json
-SavingsManagementSytem/Logs
+SavingsManagementSystem/appsettings.json
+SavingsManagementSystem/appsettings.[Dd]evelopment.json
+SavingsManagementSystem/Logs
 
 # End of https://www.gitignore.io/api/visualstudio
