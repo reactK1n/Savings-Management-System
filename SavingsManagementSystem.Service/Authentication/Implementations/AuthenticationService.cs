@@ -91,7 +91,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			var resetLink = $"https://example.com/reset-password?userId={user.Id}";
 
 			// Load the email template from the file
-			var htmlPath = @"C:\Users\User\Desktop\Repos\SavingsManagementSytem\SavingsManagementSytem\StaticFiles\Html\ForgetPassword.html";
+			var htmlPath = @"C:\Users\User\Desktop\Repos\SavingsManagementSytem\SavingsManagementSystem\StaticFiles\Html\ForgetPassword.html";
 			var emailTemplate = File.ReadAllText(htmlPath);
 
 			// Replace the {{RESET_LINK}} placeholder with the actual reset link
@@ -165,7 +165,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			var user = await _userManager.FindByIdAsync(userId);
 			if (user == null)
 			{
-				throw new ArgumentNullException("Email Provided is Invalid");
+				throw new ArgumentNullException("user not Found");
 			}
 			var isPasswordMatch = await _userManager.CheckPasswordAsync(user, request.Password);
 			if (isPasswordMatch)
