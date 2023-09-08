@@ -8,6 +8,7 @@ namespace SavingsManagementSystem.Common.Validators.AuthenticationValidator
 		public MailRequestValidator()
 		{
 			RuleFor(email => email.Subject).NotEmpty().NotNull();
+			RuleFor(email => email.Body).NotEmpty().NotNull();
 			RuleFor(email => email.RecipientEmail).EmailAddress();
 		}
 	}

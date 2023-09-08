@@ -11,6 +11,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 {
 	public class TokenService : ITokenService
 	{
+
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly IConfiguration _config;
 
@@ -46,5 +47,6 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 			return new JwtSecurityTokenHandler().WriteToken(getToken);
 		}
+
 	}
 }
