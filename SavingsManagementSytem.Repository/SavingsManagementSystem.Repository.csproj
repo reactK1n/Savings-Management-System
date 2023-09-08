@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SavingsManagementSytem.Data\SavingsManagementSystem.Data.csproj" />
-    <ProjectReference Include="..\SavingsManagementSytem.Model\SavingsManagementSystem.Model.csproj" />
+    <ProjectReference Include="..\SavingsManagementSystem.Data\SavingsManagementSystem.Data.csproj" />
+    <ProjectReference Include="..\SavingsManagementSystem.Model\SavingsManagementSystem.Model.csproj" />
   </ItemGroup>
 
 </Project>
