@@ -8,7 +8,6 @@ namespace SavingsManagementSystem.Common.Validators.AuthenticationValidator
 	{
 		public ResetPasswordRequestValidation()
 		{
-			RuleFor(user => user.Email).EmailAddress();
 			RuleFor(user => user.Password).PassWord();
 		}
 	}

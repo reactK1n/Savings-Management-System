@@ -22,8 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SavingsManagementSytem.Common\SavingsManagementSystem.Common.csproj" />
-    <ProjectReference Include="..\SavingsManagementSytem.Model\SavingsManagementSystem.Model.csproj" />
+    <ProjectReference Include="..\SavingsManagementSystem.Common\SavingsManagementSystem.Common.csproj" />
+    <ProjectReference Include="..\SavingsManagementSystem.Model\SavingsManagementSystem.Model.csproj" />
   </ItemGroup>
 
 </Project>
