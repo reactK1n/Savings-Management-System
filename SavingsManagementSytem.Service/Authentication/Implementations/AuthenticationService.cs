@@ -150,7 +150,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			var isPasswordMatch = await _userManager.CheckPasswordAsync(user, request.OldPassword);
 			if (!isPasswordMatch)
 			{
-				throw new Exception("Provided Password is not Correct, Check your Old Password");
+				throw new InvalidOperationException("Provided Password is not Correct, make sure your Old Password is valid");
 			}
 			await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
 

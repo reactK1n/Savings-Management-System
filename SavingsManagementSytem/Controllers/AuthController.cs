@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SavingsManagementSystem.Common.DTOs;
 using SavingsManagementSystem.Service.Authentication.Interfaces;
 
@@ -41,7 +42,7 @@ namespace SavingsManagementSystem.Controllers
 		}
 
 		[HttpPost]
-		[Route("forgetPassword")]
+		[Route("forget_password")]
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> ForgetPassword([FromQuery] string email)
@@ -66,7 +67,7 @@ namespace SavingsManagementSystem.Controllers
 		}
 
 		[HttpPost]
-		[Route("ResetPassword")]
+		[Route("reset_password")]
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
@@ -74,6 +75,37 @@ namespace SavingsManagementSystem.Controllers
 			try
 			{
 				var response = await _authServices.ResetPasswordAsync(request);
+				if (response != null)
+				{
+					return Ok(response);
+				}
+				return BadRequest();
+			}
+			catch (ArgumentNullException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch (InvalidOperationException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpPost]
+		[Route("change_password")]
+		[Authorize]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+		{
+			try
+			{
+				var response = await _authServices.ChangePasswordAsync(request);
 				if (response != null)
 				{
 					return Ok(response);
