@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SavingsManagementSystem", "SavingsManagementSytem\SavingsManagementSystem.csproj", "{3683E1DC-6518-40E0-B2E2-34D35FC8DBF5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SavingsManagementSystem", "SavingsManagementSystem\SavingsManagementSystem.csproj", "{3683E1DC-6518-40E0-B2E2-34D35FC8DBF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SavingsManagementSystem.Common", "SavingsManagementSytem.Common\SavingsManagementSystem.Common.csproj", "{B59E4B95-CCDA-4D08-B52C-7B67F4A2E4FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SavingsManagementSystem.Common", "SavingsManagementSystem.Common\SavingsManagementSystem.Common.csproj", "{B59E4B95-CCDA-4D08-B52C-7B67F4A2E4FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SavingsManagementSystem.Data", "SavingsManagementSytem.Data\SavingsManagementSystem.Data.csproj", "{777C51CC-97AB-4BAF-8204-F6A2C11988FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SavingsManagementSystem.Data", "SavingsManagementSystem.Data\SavingsManagementSystem.Data.csproj", "{777C51CC-97AB-4BAF-8204-F6A2C11988FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SavingsManagementSystem.Repository", "SavingsManagementSytem.Repository\SavingsManagementSystem.Repository.csproj", "{58627546-AAC4-4FD4-AC34-7ED63220723F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SavingsManagementSystem.Repository", "SavingsManagementSystem.Repository\SavingsManagementSystem.Repository.csproj", "{58627546-AAC4-4FD4-AC34-7ED63220723F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SavingsManagementSystem.Service", "SavingsManagementSytem.Service\SavingsManagementSystem.Service.csproj", "{0148FF91-F4A9-4184-8E36-FC0309B91498}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SavingsManagementSystem.Service", "SavingsManagementSystem.Service\SavingsManagementSystem.Service.csproj", "{0148FF91-F4A9-4184-8E36-FC0309B91498}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SavingsManagementSystem.Model", "SavingsManagementSytem.Model\SavingsManagementSystem.Model.csproj", "{3D7B5032-41C8-44F3-8073-16605E318293}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SavingsManagementSystem.Model", "SavingsManagementSystem.Model\SavingsManagementSystem.Model.csproj", "{3D7B5032-41C8-44F3-8073-16605E318293}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
