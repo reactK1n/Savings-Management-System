@@ -25,10 +25,22 @@ namespace SavingsManagementSystem.Repository.Implementations
 			return _dbSet.ToList();
 		}
 
-		public async Task<OTP> FetchAsync(string otpId)
+		public async Task<OTP> FetchByOtpIdAsync(string otpId)
 		{
 			var otp = await _dbSet.FindAsync(otpId);
 			return otp;
+		}
+
+		public async Task<OTP> FetchByValueAsync(string value)
+		{
+			var otp = await _dbSet.FindAsync(value);
+			return otp;
+		}
+
+		public async Task<ICollection<OTP>> FetchAllAsync(string memberId)
+		{
+			var otps = await _dbSet.Where(o => o.MemberId == memberId).ToListAsync();
+			return otps;
 		}
 
 		public new void Delete(OTP otp)

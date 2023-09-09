@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using SavingsManagementSystem.Common.CustomExceptions;
 using SavingsManagementSystem.Common.DTOs;
 using SavingsManagementSystem.Common.UserRole;
 using SavingsManagementSystem.Common.Utilities;
 using SavingsManagementSystem.Model;
+using SavingsManagementSystem.Repository.UnitOfWork.Interfaces;
 using SavingsManagementSystem.Service.Authentication.Interfaces;
 using SavingsManagementSystem.Service.Mail.Interfaces;
 using System.Security.Claims;
@@ -16,14 +18,15 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 		private readonly ITokenService _token;
 		private readonly IMailService _mailService;
 		private readonly IHttpContextAccessor _httpContextAccessor;
+		private readonly IUnitOfWork _unit;
 
-		public AuthenticationService(UserManager<ApplicationUser> userManager, ITokenService token, IMailService mailService, IHttpContextAccessor httpContextAccessor)
+		public AuthenticationService(UserManager<ApplicationUser> userManager, ITokenService token, IMailService mailService, IHttpContextAccessor httpContextAccessor, IUnitOfWork unit)
 		{
 			_userManager = userManager;
 			_token = token;
 			_mailService = mailService;
 			_httpContextAccessor = httpContextAccessor;
-
+			_unit = unit;
 		}
 
 		public async Task<RegistrationResponse> Register(ApplicationUser user, string password, UserRole role)
@@ -87,14 +90,12 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				throw new ArgumentNullException($"Email {email} provided does not exist in our Database");
 			};
 
-			// ... (your existing code to generate the token)
 			var resetLink = $"https://example.com/reset-password?userId={user.Id}";
-
 			// Load the email template from the file
-			var htmlPath = @"C:\Users\User\Desktop\Repos\SavingsManagementSytem\SavingsManagementSystem\StaticFiles\Html\ForgetPassword.html";
+			var htmlPath = Path.Combine("StaticFiles", "Html", "ForgetPassword.html");
 			var emailTemplate = File.ReadAllText(htmlPath);
 
-			// Replace the {{RESET_LINK}} placeholder with the actual reset link
+			// Replacing the {{RESET_LINK}} placeholder with the actual reset link
 			emailTemplate = emailTemplate.Replace("{{RESET_LINK}}", resetLink);
 
 			var mailRequest = new MailRequest()
@@ -114,16 +115,23 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 		public async Task<string> ConfirmEmailAsync(ConfirmEmailRequest request)
 		{
-			var user = await _userManager.FindByEmailAsync(request.Email);
-			if (user == null)
-			{
-				throw new ArgumentNullException("Email {request.Email} Provided is Invalid ");
-			}
+			var member =  await _unit.Member.FetchByOtpAsync(request.OtpId);
+			var user = await _userManager.FindByIdAsync(member.UserId);
 
 			var decodedToken = TokenConverter.DecodeToken(request.Token);
 			if (decodedToken == null)
 			{
 				throw new ArgumentNullException("Invalid Token Provided");
+			}
+			var otp = await _unit.OTP.FetchByOtpIdAsync(request.OtpId);
+			var isExpired = otp.Expire >= DateTime.UtcNow;
+            if (isExpired)
+            {
+                throw new OTPExpiredException("The OTP has expired."); 
+            }
+			if (otp.IsUsed)
+			{
+				throw new InvalidOperationException("Link Has been Used");
 			}
 			var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
 			var errors = string.Empty;
