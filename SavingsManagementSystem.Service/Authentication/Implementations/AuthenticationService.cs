@@ -23,6 +23,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			_token = token;
 			_mailService = mailService;
 			_httpContextAccessor = httpContextAccessor;
+
 		}
 
 		public async Task<RegistrationResponse> Register(ApplicationUser user, string password, UserRole role)
@@ -86,18 +87,29 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				throw new ArgumentNullException($"Email {email} provided does not exist in our Database");
 			};
 
-			var htmlPath = @"C:\Users\User\Desktop\Repos\SavingsManagementSytem\SavingsManagementSytem\StaticFiles\Html\ForgetPassword.html";
+			// ... (your existing code to generate the token)
+			var resetLink = $"https://example.com/reset-password?userId={user.Id}";
+
+			// Load the email template from the file
+			var htmlPath = @"C:\Users\User\Desktop\Repos\SavingsManagementSytem\SavingsManagementSystem\StaticFiles\Html\ForgetPassword.html";
+			var emailTemplate = File.ReadAllText(htmlPath);
+
+			// Replace the {{RESET_LINK}} placeholder with the actual reset link
+			emailTemplate = emailTemplate.Replace("{{RESET_LINK}}", resetLink);
+
 			var mailRequest = new MailRequest()
 			{
 				Subject = "Reset Password",
-				RecipientEmail = email
+				RecipientEmail = email,
+				Body = emailTemplate
+
 			};
-			var result = await _mailService.SendEmailAsync(mailRequest, htmlPath);
-            if (!result)
-            {
+			var result = await _mailService.SendEmailAsync(mailRequest);
+			if (!result)
+			{
 				return "Email not Successful";
-            }
-            return "Sent Successfully";
+			}
+			return "Sent Successfully";
 		}
 
 		public async Task<string> ConfirmEmailAsync(ConfirmEmailRequest request)
@@ -138,7 +150,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			var isPasswordMatch = await _userManager.CheckPasswordAsync(user, request.OldPassword);
 			if (!isPasswordMatch)
 			{
-				throw new Exception("Provided Password is not Correct, Check your Old Password");
+				throw new InvalidOperationException("Provided Password is not Correct, make sure your Old Password is valid");
 			}
 			await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
 
@@ -147,10 +159,13 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 		public async Task<string> ResetPasswordAsync(ResetPasswordRequest request)
 		{
-			var user = await _userManager.FindByEmailAsync(request.Email);
+			// Extract the encoded token from the query string
+			var userId = _httpContextAccessor.HttpContext.Request.Query["userId"].ToString();
+
+			var user = await _userManager.FindByIdAsync(userId);
 			if (user == null)
 			{
-				throw new ArgumentNullException("Email Provided is Invalid");
+				throw new ArgumentNullException("user not Found");
 			}
 			var isPasswordMatch = await _userManager.CheckPasswordAsync(user, request.Password);
 			if (isPasswordMatch)

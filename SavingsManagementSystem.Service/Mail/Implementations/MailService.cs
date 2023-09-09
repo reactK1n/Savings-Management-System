@@ -15,12 +15,10 @@ namespace SavingsManagementSystem.Service.Mail.Implementations
 		{
 			_config = config;
 		}
-		public async Task<bool> SendEmailAsync(MailRequest mailrequest, string htmlFilePath)
+		public async Task<bool> SendEmailAsync(MailRequest mailRequest)
 		{
 			string apiKey = _config["MailJetSettings:PublicKey"];
 			string apiSecret = _config["MailJetSettings:PrivateKey"];
-			string htmlContent = File.ReadAllText(htmlFilePath);
-
 
 			MailjetClient client = new MailjetClient(apiKey, apiSecret);
 
@@ -30,12 +28,11 @@ namespace SavingsManagementSystem.Service.Mail.Implementations
 			}
 				.Property(Send.FromEmail, "upskillz.org@gmail.com")
 				.Property(Send.FromName, "octalTech")
-				.Property(Send.Subject, mailrequest.Subject)
-				.Property(Send.TextPart, mailrequest.Body)
-				.Property(Send.HtmlPart, htmlContent)
+				.Property(Send.Subject, mailRequest.Subject)
+				.Property(Send.HtmlPart, mailRequest.Body)
 				.Property(Send.Recipients, new JArray {
 				new JObject {
-					{"Email", mailrequest.RecipientEmail}
+					{"Email", mailRequest.RecipientEmail}
 				}
 				});
 
@@ -44,4 +41,5 @@ namespace SavingsManagementSystem.Service.Mail.Implementations
 		}
 
 	}
+
 }

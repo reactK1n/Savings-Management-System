@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SavingsManagementSystem.Common\SavingsManagementSystem.Common.csproj" />
+    <ProjectReference Include="..\SavingsManagementSystem.Service\SavingsManagementSystem.Service.csproj" />
     <ProjectReference Include="..\SavingsManagementSystem.Data\SavingsManagementSystem.Data.csproj" />
     <ProjectReference Include="..\SavingsManagementSystem.Repository\SavingsManagementSystem.Repository.csproj" />
     <ProjectReference Include="..\SavingsManagementSystem.Service\SavingsManagementSystem.Service.csproj" />
