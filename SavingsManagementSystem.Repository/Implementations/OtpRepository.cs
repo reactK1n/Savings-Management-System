@@ -36,9 +36,9 @@ namespace SavingsManagementSystem.Repository.Implementations
 			return otp;
 		}
 
-		public async Task<ICollection<OTP>> FetchAllAsync(string memberId)
+		public async Task<ICollection<OTP>> FetchAllAsync(string userId)
 		{
-			var otps = await _dbSet.Where(o => o.MemberId == memberId).ToListAsync();
+			var otps = await _dbSet.Where(o => o.UserId == userId).ToListAsync();
 			return otps;
 		}
 

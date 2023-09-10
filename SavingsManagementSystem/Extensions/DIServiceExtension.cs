@@ -14,6 +14,7 @@ using SavingsManagementSystem.Service.Mail.Interfaces;
 using SavingsManagementSystem.Service.User.Implementations;
 using SavingsManagementSystem.Service.User.Interfaces;
 using Microsoft.AspNetCore.Mvc.Routing;
+using SavingsManagementSystem.Common.Utilities;
 
 namespace SavingsManagementSystem.Extensions
 {
@@ -24,13 +25,12 @@ namespace SavingsManagementSystem.Extensions
 			//add IhttpContext accessor
 			services.AddHttpContextAccessor();
 
-			//register IUrlHelper
+			// Register your GenerateLink class
+			services.AddScoped<GenerateLink>();
+
+			// Add the required services for LinkGenerator
 			services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-			services.AddSingleton<IUrlHelper>(provider =>
-			{
-				var actionContext = provider.GetRequiredService<IActionContextAccessor>().ActionContext;
-				return new UrlHelper(actionContext);
-			});
+			services.AddScoped<IUrlHelper>(x => new UrlHelper(x.GetRequiredService<IActionContextAccessor>().ActionContext));
 
 			//Sevices DI
 			services.AddScoped<IAdminService, AdminService>();

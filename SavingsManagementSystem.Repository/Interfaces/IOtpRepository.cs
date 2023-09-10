@@ -12,7 +12,7 @@ namespace SavingsManagementSystem.Repository.Interfaces
 
 		Task<OTP> FetchByValueAsync(string value);
 
-		Task<ICollection<OTP>> FetchAllAsync(string memberId);
+		Task<ICollection<OTP>> FetchAllAsync(string userId);
 
 		void Update(OTP otp);
 

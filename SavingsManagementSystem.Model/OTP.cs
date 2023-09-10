@@ -6,8 +6,8 @@ namespace SavingsManagementSystem.Model
 	{
 		public string Id { get; set; }
 
-		[ForeignKey(nameof(Member))]
-		public string MemberId { get; set; }
+		[ForeignKey(nameof(ApplicationUser))]
+		public string UserId { get; set; }
 
 		public string Value { get; set; }
 
@@ -19,7 +19,7 @@ namespace SavingsManagementSystem.Model
 
 
 		//navigation property
-		public Member Member { get; set; }
+		public ApplicationUser User { get; set; }
 
 	}
 }
