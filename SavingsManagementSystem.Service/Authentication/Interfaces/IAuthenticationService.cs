@@ -12,7 +12,7 @@ namespace SavingsManagementSystem.Service.Authentication.Interfaces
 
 		Task<string> ForgetPasswordAsync(string email);
 
-		Task<string> ConfirmEmailAsync(ConfirmEmailRequest request);
+		Task<string> ConfirmEmailAsync();
 
 		Task<string> ChangePasswordAsync(ChangePasswordRequest request);
 

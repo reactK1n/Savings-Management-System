@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 using SavingsManagementSystem.Common.DTOs;
 using SavingsManagementSystem.Common.Validators.AuthenticationValidator;
 using SavingsManagementSystem.Repository.Implementations;
@@ -11,6 +13,7 @@ using SavingsManagementSystem.Service.Mail.Implementations;
 using SavingsManagementSystem.Service.Mail.Interfaces;
 using SavingsManagementSystem.Service.User.Implementations;
 using SavingsManagementSystem.Service.User.Interfaces;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace SavingsManagementSystem.Extensions
 {
@@ -18,12 +21,23 @@ namespace SavingsManagementSystem.Extensions
 	{
 		public static void AddDependencyInjection(this IServiceCollection services)
 		{
-			//add httpContext accessor
+			//add IhttpContext accessor
 			services.AddHttpContextAccessor();
+
+			//register IUrlHelper
+			services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+			services.AddSingleton<IUrlHelper>(provider =>
+			{
+				var actionContext = provider.GetRequiredService<IActionContextAccessor>().ActionContext;
+				return new UrlHelper(actionContext);
+			});
+
 			//Sevices DI
 			services.AddScoped<IAdminService, AdminService>();
 			services.AddScoped<IAuthenticationService, AuthenticationService>();
 			services.AddScoped<ITokenService, TokenService>();
+			services.AddScoped<IOTPService, OTPService>();
+
 
 			//repository DI
 			services.AddScoped<IMemberRepository, MemberRepository>();
@@ -40,10 +54,6 @@ namespace SavingsManagementSystem.Extensions
 			services.AddScoped<IValidator<MailRequest>, MailRequestValidator>();
 			services.AddScoped<IValidator<ConfirmEmailRequest>, ConfirmEmailRequestValidator>();
 			services.AddScoped<IValidator<ChangePasswordRequest>, ChangePasswordRequestValidator>();
-
-
-
-
 
 		}
 	}

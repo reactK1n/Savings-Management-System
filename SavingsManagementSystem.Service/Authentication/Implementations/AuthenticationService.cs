@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using SavingsManagementSystem.Common.CustomExceptions;
 using SavingsManagementSystem.Common.DTOs;
 using SavingsManagementSystem.Common.UserRole;
@@ -8,6 +11,7 @@ using SavingsManagementSystem.Model;
 using SavingsManagementSystem.Repository.UnitOfWork.Interfaces;
 using SavingsManagementSystem.Service.Authentication.Interfaces;
 using SavingsManagementSystem.Service.Mail.Interfaces;
+using System;
 using System.Security.Claims;
 
 namespace SavingsManagementSystem.Service.Authentication.Implementations
@@ -19,14 +23,27 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 		private readonly IMailService _mailService;
 		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly IUnitOfWork _unit;
+		private readonly IUrlHelper _urlHelper;
+		private readonly IOTPService _otpService;
+		private readonly IConfiguration _config;
 
-		public AuthenticationService(UserManager<ApplicationUser> userManager, ITokenService token, IMailService mailService, IHttpContextAccessor httpContextAccessor, IUnitOfWork unit)
+		public AuthenticationService(UserManager<ApplicationUser> userManager,
+			ITokenService token,
+			IMailService mailService,
+			IHttpContextAccessor httpContextAccessor, 
+			IUnitOfWork unit,
+			IUrlHelper urlHelper,
+			IOTPService otpService,
+			IConfiguration config)
 		{
 			_userManager = userManager;
 			_token = token;
 			_mailService = mailService;
 			_httpContextAccessor = httpContextAccessor;
 			_unit = unit;
+			_urlHelper = urlHelper;
+			_otpService = otpService;
+			_config = config;
 		}
 
 		public async Task<RegistrationResponse> Register(ApplicationUser user, string password, UserRole role)
@@ -90,11 +107,14 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				throw new ArgumentNullException($"Email {email} provided does not exist in our Database");
 			};
 
-			var resetLink = $"https://example.com/reset-password?userId={user.Id}";
+            var otp = await _otpService.CreateOtpAsync(user.Id, 30);
+			await _unit.SaveChangesAsync();
+
 			// Load the email template from the file
 			var htmlPath = Path.Combine("StaticFiles", "Html", "ForgetPassword.html");
 			var emailTemplate = File.ReadAllText(htmlPath);
 
+			var resetLink = _urlHelper.Action("ResetPassword", "Auth", new { userId = user.Id, otpId = otp.Id}, _httpContextAccessor.HttpContext.Request.Scheme);
 			// Replacing the {{RESET_LINK}} placeholder with the actual reset link
 			emailTemplate = emailTemplate.Replace("{{RESET_LINK}}", resetLink);
 
@@ -113,17 +133,19 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			return "Sent Successfully";
 		}
 
-		public async Task<string> ConfirmEmailAsync(ConfirmEmailRequest request)
+		public async Task<string> ConfirmEmailAsync()
 		{
-			var member =  await _unit.Member.FetchByOtpAsync(request.OtpId);
-			var user = await _userManager.FindByIdAsync(member.UserId);
+			var userId = _httpContextAccessor.HttpContext.Request.Query["userId"].ToString();
+			var otpId = _httpContextAccessor.HttpContext.Request.Query["otpId"].ToString();
 
-			var decodedToken = TokenConverter.DecodeToken(request.Token);
-			if (decodedToken == null)
+			var user = await _userManager.FindByIdAsync(userId);
+			var TokenProviderName = _config["JwtSettings:ValidIssuer"];
+			var token = await _userManager.GenerateUserTokenAsync(user, $"{TokenProviderName}", "EmailConfirmation");
+			if (token == null)
 			{
 				throw new ArgumentNullException("Invalid Token Provided");
 			}
-			var otp = await _unit.OTP.FetchByOtpIdAsync(request.OtpId);
+			var otp = await _unit.OTP.FetchByOtpIdAsync(otpId);
 			var isExpired = otp.Expire >= DateTime.UtcNow;
             if (isExpired)
             {
@@ -133,7 +155,8 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			{
 				throw new InvalidOperationException("Link Has been Used");
 			}
-			var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+
+			var result = await _userManager.ConfirmEmailAsync(user, token);
 			var errors = string.Empty;
 			if (!result.Succeeded)
 			{
@@ -143,6 +166,10 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				}
 				throw new InvalidOperationException(errors);
 			}
+
+			otp.IsUsed = true;
+			_unit.OTP.Update(otp);
+			await _unit.SaveChangesAsync();
 
 			return "Email Confirmed Successfully";
 		}

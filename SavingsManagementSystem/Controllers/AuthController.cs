@@ -42,7 +42,7 @@ namespace SavingsManagementSystem.Controllers
 		}
 
 		[HttpPost]
-		[Route("forget_password")]
+		[Route("forgetPassword")]
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> ForgetPassword([FromQuery] string email)
@@ -67,7 +67,7 @@ namespace SavingsManagementSystem.Controllers
 		}
 
 		[HttpPost]
-		[Route("reset_password")]
+		[Route("resetPassword")]
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
@@ -96,7 +96,7 @@ namespace SavingsManagementSystem.Controllers
 		}
 
 		[HttpPost]
-		[Route("change_password")]
+		[Route("changePassword")]
 		[Authorize]
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]

@@ -14,6 +14,8 @@ namespace SavingsManagementSystem.Repository.Interfaces
 
 		Task<ICollection<OTP>> FetchAllAsync(string memberId);
 
+		void Update(OTP otp);
+
 		void Delete(OTP otp);
 	}
 }

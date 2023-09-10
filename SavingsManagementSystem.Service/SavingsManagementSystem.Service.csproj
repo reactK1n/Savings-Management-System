@@ -19,8 +19,4 @@
     <ProjectReference Include="..\SavingsManagementSystem.Repository\SavingsManagementSystem.Repository.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="OTP\Interfaces\" />
-  </ItemGroup>
-
 </Project>

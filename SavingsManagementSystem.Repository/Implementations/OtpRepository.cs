@@ -2,7 +2,6 @@
 using SavingsManagementSystem.Data.Contexts;
 using SavingsManagementSystem.Model;
 using SavingsManagementSystem.Repository.Interfaces;
-using static System.Net.WebRequestMethods;
 
 namespace SavingsManagementSystem.Repository.Implementations
 {
@@ -41,6 +40,11 @@ namespace SavingsManagementSystem.Repository.Implementations
 		{
 			var otps = await _dbSet.Where(o => o.MemberId == memberId).ToListAsync();
 			return otps;
+		}
+
+		public new void Update(OTP otp)
+		{
+			_dbSet.Update(otp);
 		}
 
 		public new void Delete(OTP otp)
