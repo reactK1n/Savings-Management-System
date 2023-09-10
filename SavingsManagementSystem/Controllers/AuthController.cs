@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SavingsManagementSystem.Common.CustomExceptions;
 using SavingsManagementSystem.Common.DTOs;
 using SavingsManagementSystem.Service.Authentication.Interfaces;
 
@@ -118,6 +119,40 @@ namespace SavingsManagementSystem.Controllers
 				return BadRequest(ex.Message);
 			}
 			catch (InvalidOperationException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpPost]
+		[Route("confirmPassword")]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> confirmPassword([FromBody] ConfirmEmailRequest request)
+		{
+			try
+			{
+				var response = await _authServices.ConfirmEmailAsync(request);
+				if (response != null)
+				{
+					return Ok(response);
+				}
+				return BadRequest();
+			}
+			catch (ArgumentNullException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch (InvalidOperationException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch (OTPExpiredException ex)
 			{
 				return BadRequest(ex.Message);
 			}

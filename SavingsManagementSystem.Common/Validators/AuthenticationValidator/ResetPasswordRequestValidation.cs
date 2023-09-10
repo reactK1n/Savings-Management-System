@@ -9,6 +9,11 @@ namespace SavingsManagementSystem.Common.Validators.AuthenticationValidator
 		public ResetPasswordRequestValidation()
 		{
 			RuleFor(user => user.Password).PassWord();
+
+			RuleFor(user => user.UserId).NotEmpty().NotNull();
+
+			RuleFor(user => user.OtpId).NotNull().NotEmpty();
+
 		}
 	}
 }

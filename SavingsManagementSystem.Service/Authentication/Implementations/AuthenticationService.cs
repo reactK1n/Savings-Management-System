@@ -12,6 +12,7 @@ using SavingsManagementSystem.Model;
 using SavingsManagementSystem.Repository.UnitOfWork.Interfaces;
 using SavingsManagementSystem.Service.Authentication.Interfaces;
 using SavingsManagementSystem.Service.Mail.Interfaces;
+using System.Net;
 using System.Security.Claims;
 
 namespace SavingsManagementSystem.Service.Authentication.Implementations
@@ -136,19 +137,19 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			return "Sent Successfully";
 		}
 
-		public async Task<string> ConfirmEmailAsync()
+		public async Task<string> ConfirmEmailAsync(ConfirmEmailRequest request)
 		{
-			var userId = _httpContextAccessor.HttpContext.Request.Query["userId"].ToString();
-			var otpId = _httpContextAccessor.HttpContext.Request.Query["otpId"].ToString();
-
-			var user = await _userManager.FindByIdAsync(userId);
-			var TokenProviderName = _config["JwtSettings:ValidIssuer"];
-			var token = await _userManager.GenerateUserTokenAsync(user, $"{TokenProviderName}", "EmailConfirmation");
+			var user = await _userManager.FindByIdAsync(request.UserId);
+			if (user == null)
+			{
+				throw new ArgumentNullException("Invalid User Id");
+			}
+			var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 			if (token == null)
 			{
 				throw new ArgumentNullException("Invalid Token Provided");
 			}
-			var otp = await _unit.OTP.FetchByOtpIdAsync(otpId);
+			var otp = await _unit.OTP.FetchByOtpIdAsync(request.OtpId);
 			var isExpired = otp.Expire >= DateTime.UtcNow;
 			if (isExpired)
 			{
@@ -197,17 +198,13 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 		public async Task<string> ResetPasswordAsync(ResetPasswordRequest request)
 		{
-			// Extract the encoded token from the query string
-			var userId = _httpContextAccessor.HttpContext.Request.Query["userId"].ToString();
-			var otpId = _httpContextAccessor.HttpContext.Request.Query["otpId"].ToString();
-
-			var user = await _userManager.FindByIdAsync(userId);
+			var user = await _userManager.FindByIdAsync(request.UserId);
 			if (user == null)
 			{
 				throw new ArgumentNullException("user not Found");
 			}
 
-			var otp = await _unit.OTP.FetchByOtpIdAsync(otpId);
+			var otp = await _unit.OTP.FetchByOtpIdAsync(request.OtpId);
 			var isExpired = otp.Expire >= DateTime.UtcNow;
 			if (isExpired)
 			{

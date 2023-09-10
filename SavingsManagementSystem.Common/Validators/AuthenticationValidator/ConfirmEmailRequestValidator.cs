@@ -8,7 +8,7 @@ namespace SavingsManagementSystem.Common.Validators.AuthenticationValidator
 		public ConfirmEmailRequestValidator() 
 		{
 			RuleFor(user => user.OtpId).NotEmpty().NotNull();
-			RuleFor(user => user.Token).NotNull().NotEmpty();
+			RuleFor(user => user.UserId).NotNull().NotEmpty();
 		}
 	}
 }
