@@ -4,7 +4,7 @@
 	{
 		public string Password { get; set; }
 
-		public string OtpId { get; set; }
+		public string VToken { get; set; }
 
 		public string UserId { get; set; }
 

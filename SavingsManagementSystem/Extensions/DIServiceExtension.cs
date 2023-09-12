@@ -37,6 +37,9 @@ namespace SavingsManagementSystem.Extensions
 			services.AddScoped<IAuthenticationService, AuthenticationService>();
 			services.AddScoped<ITokenService, TokenService>();
 			services.AddScoped<IOTPService, OTPService>();
+			services.AddScoped<IVerificationTokenService, VerificationTokenService>();
+			services.AddScoped<IMailService, MailService>();
+
 
 
 			//repository DI
@@ -44,7 +47,7 @@ namespace SavingsManagementSystem.Extensions
 			services.AddScoped<ISavingRepository, SavingRepository>();
 			services.AddScoped<IOtpRepository, OtpRepository>();
 			services.AddScoped<ITransactionRepository, TransactionRepository>();
-			services.AddScoped<IMailService, MailService>();
+			services.AddScoped<IVTRepository, VTRepository>();
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 			//registering Fluent validations injection class

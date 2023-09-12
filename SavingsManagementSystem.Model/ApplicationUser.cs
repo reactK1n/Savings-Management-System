@@ -17,6 +17,8 @@ namespace SavingsManagementSystem.Model
 		public string? AddressId { get; set; }
 		//nav property
 
+		public ICollection<VerificationToken>? VerificationTokens { get; set; }
+
 		public Address Address { get; set; }
 	}
 }

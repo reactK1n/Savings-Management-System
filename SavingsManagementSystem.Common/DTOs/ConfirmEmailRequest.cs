@@ -2,7 +2,7 @@
 {
 	public class ConfirmEmailRequest
 	{
-		public string OtpId { get; set;}
+		public string vToken { get; set;}
 
 		public string UserId { get; set; }
 	}

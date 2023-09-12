@@ -12,7 +12,7 @@ namespace SavingsManagementSystem.Common.Validators.AuthenticationValidator
 
 			RuleFor(user => user.UserId).NotEmpty().NotNull();
 
-			RuleFor(user => user.OtpId).NotNull().NotEmpty();
+			RuleFor(user => user.VToken).NotNull().NotEmpty();
 
 		}
 	}

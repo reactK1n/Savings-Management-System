@@ -21,7 +21,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 		private readonly IMailService _mailService;
 		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly IUnitOfWork _unit;
-		private readonly IOTPService _otpService;
+		private readonly IVerificationTokenService _vTokenService;
 		private readonly IConfiguration _config;
 		private readonly GenerateLink _generateLink;
 
@@ -30,18 +30,18 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			IMailService mailService,
 			IHttpContextAccessor httpContextAccessor,
 			IUnitOfWork unit,
-			IOTPService otpService,
 			IConfiguration config,
-			GenerateLink generateLink)
+			GenerateLink generateLink,
+			IVerificationTokenService vTokenService)
 		{
 			_userManager = userManager;
 			_token = token;
 			_mailService = mailService;
 			_httpContextAccessor = httpContextAccessor;
 			_unit = unit;
-			_otpService = otpService;
 			_config = config;
 			_generateLink = generateLink;
+			_vTokenService = vTokenService;
 		}
 
 		public async Task<RegistrationResponse> Register(ApplicationUser user, string password, UserRole role)
@@ -112,7 +112,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				throw new ArgumentNullException($"Email {email} provided does not exist in our Database");
 			};
 
-			var otp = await _otpService.CreateOtpAsync(user.Id, 30);
+			var vToken = await _vTokenService.CreateVerificationTokenAsync(user.Id, 30);
 			await _unit.SaveChangesAsync();
 
 			// Load the email template from the file
@@ -121,7 +121,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			var queryParams = new ForgetPassQueryParams
 			{
 				UserId = user.Id,
-				OtpId = otp.Id
+				Token = vToken.Token
 			};
 			var resetLink = _generateLink.GenerateUrl("ResetPassword", "Auth", queryParams);
 			// Replacing the {{RESET_LINK}} placeholder with the actual reset link
@@ -151,15 +151,15 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 			if (token == null)
 			{
-				throw new ArgumentNullException("Invalid Token Provided");
+				throw new ArgumentNullException("Invalid User Provided");
 			}
-			var otp = await _unit.OTP.FetchByOtpIdAsync(request.OtpId);
-			var isExpired = otp.Expire >= DateTime.UtcNow;
+			var vToken = await _unit.VerificationToken.FetchByTokenAsync(request.vToken);
+			var isExpired = vToken.ExpiryTime >= DateTime.UtcNow;
 			if (isExpired)
 			{
-				throw new OTPExpiredException("The OTP has expired.");
+				throw new OTPExpiredException("The Link has expired.");
 			}
-			if (otp.IsUsed)
+			if (vToken.IsUsed)
 			{
 				throw new InvalidOperationException("Link Has been Used");
 			}
@@ -175,8 +175,8 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				throw new InvalidOperationException(errors);
 			}
 
-			otp.IsUsed = true;
-			_unit.OTP.Update(otp);
+			vToken.IsUsed = true;
+			_unit.VerificationToken.Update(vToken);
 			await _unit.SaveChangesAsync();
 
 			return "Email Confirmed Successfully";
@@ -208,13 +208,13 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				throw new ArgumentNullException("user not Found");
 			}
 
-			var otp = await _unit.OTP.FetchByOtpIdAsync(request.OtpId);
-			var isExpired = otp.Expire >= DateTime.UtcNow;
+			var vToken = await _unit.VerificationToken.FetchByTokenAsync(request.VToken);
+			var isExpired = vToken.ExpiryTime >= DateTime.UtcNow;
 			if (isExpired)
 			{
-				throw new OTPExpiredException("The OTP has expired.");
+				throw new OTPExpiredException("The Link has expired.");
 			}
-			if (otp.IsUsed)
+			if (vToken.IsUsed)
 			{
 				throw new InvalidOperationException("Link Has been Used");
 			}
@@ -236,8 +236,8 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				}
 				throw new InvalidOperationException(errors);
 			}
-			otp.IsUsed = true;
-			_unit.OTP.Update(otp);
+			vToken.IsUsed = true;
+			_unit.VerificationToken.Update(vToken);
 			await _unit.SaveChangesAsync();
 
 			return "Password Changed Successfully";

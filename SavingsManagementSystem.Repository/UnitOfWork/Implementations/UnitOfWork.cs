@@ -14,6 +14,7 @@ namespace SavingsManagementSystem.Repository.UnitOfWork.Implementations
 		private IOtpRepository _otp;
 		private ISavingRepository _saving;
 		private ITransactionRepository _transaction;
+		private IVTRepository _verificationToken;
 
 		public UnitOfWork(SavingsDBContext context)
 		{
@@ -43,6 +44,11 @@ namespace SavingsManagementSystem.Repository.UnitOfWork.Implementations
 		public IOtpRepository OTP
 		{
 			get => _otp ??= new OtpRepository(_context);
+		}
+
+		public IVTRepository VerificationToken
+		{
+			get => _verificationToken ??= new VTRepository(_context);
 		}
 
 		public ITransactionRepository Transaction
