@@ -6,6 +6,6 @@ namespace SavingsManagementSystem.Service.Authentication.Interfaces
 	{
 		Task<string> GetToken(ApplicationUser user);
 
-		string GenerateRefreshToken()
+		string GenerateRefreshToken();
 	}
 }

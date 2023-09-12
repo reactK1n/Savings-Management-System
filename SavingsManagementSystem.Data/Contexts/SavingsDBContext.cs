@@ -14,8 +14,10 @@ namespace SavingsManagementSystem.Data.Contexts
         public DbSet<Saving> Savings { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<OTP> OTPs { get; set; }
+		public DbSet<VerificationToken> VerificationTokens { get; set; }
 
-        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+
+		public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             foreach (var item in ChangeTracker.Entries<BaseEntity>())
             {

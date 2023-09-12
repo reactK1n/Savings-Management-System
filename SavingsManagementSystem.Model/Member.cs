@@ -13,7 +13,9 @@ namespace SavingsManagementSystem.Model
 
 		public ICollection<Saving> Savings { get; set; }
 
-		public ICollection<OTP> OTP { get; set; }
+		public ICollection<OTP> OTPs { get; set; }
+
+		public ICollection<VerificationToken> VerificationTokens { get; set; }
 
 		public ICollection<Transaction> Transactions { get; set; }
 
