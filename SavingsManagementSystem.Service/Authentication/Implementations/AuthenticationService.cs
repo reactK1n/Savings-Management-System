@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using SavingsManagementSystem.Common.CustomExceptions;
 using SavingsManagementSystem.Common.DTOs;
@@ -12,7 +10,6 @@ using SavingsManagementSystem.Model;
 using SavingsManagementSystem.Repository.UnitOfWork.Interfaces;
 using SavingsManagementSystem.Service.Authentication.Interfaces;
 using SavingsManagementSystem.Service.Mail.Interfaces;
-using System.Net;
 using System.Security.Claims;
 
 namespace SavingsManagementSystem.Service.Authentication.Implementations
@@ -86,6 +83,12 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				throw new ArgumentNullException("Password Not Match");
 			}
 			var token = await _token.GetToken(user);
+			var refreshToken = _token.GenerateRefreshToken();
+			user.RefreshToken = refreshToken;
+			user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7); //sets refresh token for 7 days
+			//updating our db
+			await _userManager.UpdateAsync(user);
+			await _unit.SaveChangesAsync();
 
 			var response = new LoginResponse
 			{
@@ -94,7 +97,8 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				LastName = user.LastName,
 				Email = user.Email,
 				Username = user.UserName,
-				Token = token
+				Token = token,
+				RefreshToken = refreshToken
 			};
 
 			return response;

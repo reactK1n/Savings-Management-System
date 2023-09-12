@@ -9,7 +9,7 @@ using System.Text;
 
 namespace SavingsManagementSystem.Service.Authentication.Implementations
 {
-	public class TokenService : ITokenService
+	public class TokenService : ITokenService 
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly IConfiguration _config;
@@ -46,5 +46,15 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 			return new JwtSecurityTokenHandler().WriteToken(getToken);
 		}
+
+		public string GenerateRefreshToken()
+		{
+			// Generate a custom token by concatenating two new Guids
+			string refreshToken = Guid.NewGuid().ToString();
+
+			// Return the custom token
+			return refreshToken;
+		}
+
 	}
 }

@@ -14,13 +14,13 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			_unit = unit;
 		}
 
-		public async Task<OTP> CreateOtpAsync(string userId, int expireMinutes)
+		public async Task<OTP> CreateOtpAsync(string memberId, int expireMinutes)
 		{
 			var createdOn = DateTime.UtcNow;
 			var otp = new OTP
 			{
 				Id = Guid.NewGuid().ToString(),
-				UserId = userId,
+				MemberId = memberId,
 				Value = Helper.GenerateOtpValue(),
 				IsUsed = false,
 				CreatedOn = createdOn,
