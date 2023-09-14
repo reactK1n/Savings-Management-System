@@ -152,7 +152,7 @@ namespace SavingsManagementSystem.Controllers
 			{
 				return BadRequest(ex.Message);
 			}
-			catch (OTPExpiredException ex)
+			catch (LinkExpiredException ex)
 			{
 				return BadRequest(ex.Message);
 			}

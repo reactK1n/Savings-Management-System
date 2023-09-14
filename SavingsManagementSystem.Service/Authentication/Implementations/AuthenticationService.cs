@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using SavingsManagementSystem.Common.CustomExceptions;
 using SavingsManagementSystem.Common.DTOs;
@@ -10,6 +11,7 @@ using SavingsManagementSystem.Model;
 using SavingsManagementSystem.Repository.UnitOfWork.Interfaces;
 using SavingsManagementSystem.Service.Authentication.Interfaces;
 using SavingsManagementSystem.Service.Mail.Interfaces;
+using System;
 using System.Security.Claims;
 
 namespace SavingsManagementSystem.Service.Authentication.Implementations
@@ -113,17 +115,17 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			};
 
 			var vToken = await _vTokenService.CreateVerificationTokenAsync(user.Id, 30);
+			var encodedToken = TokenConverter.EncodeToken(vToken.Token);
+			var encodedUserId = TokenConverter.EncodeToken(user.Id);
+
 			await _unit.SaveChangesAsync();
 
 			// Load the email template from the file
 			var htmlPath = Path.Combine("StaticFiles", "Html", "ForgetPassword.html");
 			var emailTemplate = File.ReadAllText(htmlPath);
-			var queryParams = new ForgetPassQueryParams
-			{
-				UserId = user.Id,
-				Token = vToken.Token
-			};
+			var queryParams = $"userId={encodedUserId}&token={encodedToken}"; // Already encoded
 			var resetLink = _generateLink.GenerateUrl("ResetPassword", "Auth", queryParams);
+
 			// Replacing the {{RESET_LINK}} placeholder with the actual reset link
 			emailTemplate = emailTemplate.Replace("{{RESET_LINK}}", resetLink);
 			var mailRequest = new MailRequest()
@@ -143,7 +145,8 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 		public async Task<string> ConfirmEmailAsync(ConfirmEmailRequest request)
 		{
-			var user = await _userManager.FindByIdAsync(request.UserId);
+			var decodedUserId = TokenConverter.DecodeToken(request.UserId);
+			var user = await _userManager.FindByIdAsync(decodedUserId);
 			if (user == null)
 			{
 				throw new ArgumentNullException("Invalid User Id");
@@ -153,11 +156,13 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			{
 				throw new ArgumentNullException("Invalid User Provided");
 			}
-			var vToken = await _unit.VerificationToken.FetchByTokenAsync(request.vToken);
+
+			var decodedvToken = TokenConverter.DecodeToken(request.VToken);
+			var vToken = await _unit.VerificationToken.FetchByTokenAsync(decodedvToken);
 			var isExpired = vToken.ExpiryTime >= DateTime.UtcNow;
 			if (isExpired)
 			{
-				throw new OTPExpiredException("The Link has expired.");
+				throw new LinkExpiredException();
 			}
 			if (vToken.IsUsed)
 			{
@@ -202,17 +207,23 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 		public async Task<string> ResetPasswordAsync(ResetPasswordRequest request)
 		{
-			var user = await _userManager.FindByIdAsync(request.UserId);
+			var decodedUserId = TokenConverter.DecodeToken(request.UserId);
+			var user = await _userManager.FindByIdAsync(decodedUserId);
 			if (user == null)
 			{
 				throw new ArgumentNullException("user not Found");
 			}
 
-			var vToken = await _unit.VerificationToken.FetchByTokenAsync(request.VToken);
+			var decodedvToken = TokenConverter.DecodeToken(request.VToken);
+			var vToken = await _unit.VerificationToken.FetchByTokenAsync(decodedvToken);
+			if (vToken == null)
+			{
+				throw new ArgumentNullException("user token is Invalid");
+			}
 			var isExpired = vToken.ExpiryTime >= DateTime.UtcNow;
 			if (isExpired)
 			{
-				throw new OTPExpiredException("The Link has expired.");
+				throw new LinkExpiredException("The Link has expired.");
 			}
 			if (vToken.IsUsed)
 			{
