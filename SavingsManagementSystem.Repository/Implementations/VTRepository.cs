@@ -32,7 +32,7 @@ namespace SavingsManagementSystem.Repository.Implementations
 
 		public async Task<VerificationToken> FetchByTokenAsync(string token)
 		{
-			var vToken = await _dbSet.FirstOrDefaultAsync(o => o.Token == token); ;
+			var vToken = await _dbSet.FirstOrDefaultAsync(o => o.Token == token); 
 			return vToken;
 		}
 
