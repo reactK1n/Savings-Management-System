@@ -1,17 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using SavingsManagementSystem.Common.CustomExceptions;
 using SavingsManagementSystem.Common.DTOs;
-using SavingsManagementSystem.Common.Model;
 using SavingsManagementSystem.Common.UserRole;
 using SavingsManagementSystem.Common.Utilities;
 using SavingsManagementSystem.Model;
 using SavingsManagementSystem.Repository.UnitOfWork.Interfaces;
 using SavingsManagementSystem.Service.Authentication.Interfaces;
 using SavingsManagementSystem.Service.Mail.Interfaces;
-using System;
 using System.Security.Claims;
 
 namespace SavingsManagementSystem.Service.Authentication.Implementations
@@ -88,7 +85,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			var refreshToken = _token.GenerateRefreshToken();
 			user.RefreshToken = refreshToken;
 			user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7); //sets refresh token for 7 days
-			//updating our db
+																   //updating our db
 			await _userManager.UpdateAsync(user);
 			await _unit.SaveChangesAsync();
 
