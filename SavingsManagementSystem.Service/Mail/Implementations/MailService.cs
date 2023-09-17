@@ -19,6 +19,8 @@ namespace SavingsManagementSystem.Service.Mail.Implementations
 		{
 			string apiKey = _config["MailJetSettings:PublicKey"];
 			string apiSecret = _config["MailJetSettings:PrivateKey"];
+			string fromMail = _config["MailSettings:Mail"];
+			string fromName = "OctalTech";
 
 			MailjetClient client = new MailjetClient(apiKey, apiSecret);
 
@@ -26,8 +28,8 @@ namespace SavingsManagementSystem.Service.Mail.Implementations
 			{
 				Resource = Send.Resource,
 			}
-				.Property(Send.FromEmail, "upskillz.org@gmail.com")
-				.Property(Send.FromName, "octalTech")
+				.Property(Send.FromEmail, fromMail)
+				.Property(Send.FromName, fromName)
 				.Property(Send.Subject, mailRequest.Subject)
 				.Property(Send.HtmlPart, mailRequest.Body)
 				.Property(Send.Recipients, new JArray {

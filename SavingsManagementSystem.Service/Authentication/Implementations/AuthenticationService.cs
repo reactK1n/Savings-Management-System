@@ -18,11 +18,8 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly ITokenService _token;
 		private readonly IMailService _mailService;
-		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly IUnitOfWork _unit;
 		private readonly IVerificationTokenService _vTokenService;
-		private readonly IConfiguration _config;
-		private readonly GenerateLink _generateLink;
 
 		public AuthenticationService(UserManager<ApplicationUser> userManager,
 			ITokenService token,
@@ -30,16 +27,12 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			IHttpContextAccessor httpContextAccessor,
 			IUnitOfWork unit,
 			IConfiguration config,
-			GenerateLink generateLink,
 			IVerificationTokenService vTokenService)
 		{
 			_userManager = userManager;
 			_token = token;
 			_mailService = mailService;
-			_httpContextAccessor = httpContextAccessor;
 			_unit = unit;
-			_config = config;
-			_generateLink = generateLink;
 			_vTokenService = vTokenService;
 		}
 
@@ -85,7 +78,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			var refreshToken = _token.GenerateRefreshToken();
 			user.RefreshToken = refreshToken;
 			user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7); //sets refresh token for 7 days
-																   //updating our db
+			 //updating our db
 			await _userManager.UpdateAsync(user);
 			await _unit.SaveChangesAsync();
 
@@ -113,15 +106,13 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 			var vToken = await _vTokenService.CreateVerificationTokenAsync(user.Id, 30);
 			var encodedToken = TokenConverter.EncodeToken(vToken.Token);
-			var encodedUserId = TokenConverter.EncodeToken(user.Id);
-
 			await _unit.SaveChangesAsync();
 
 			// Load the email template from the file
 			var htmlPath = Path.Combine("StaticFiles", "Html", "ForgetPassword.html");
 			var emailTemplate = File.ReadAllText(htmlPath);
-			var queryParams = $"userId={encodedUserId}&token={encodedToken}"; // Already encoded
-			var resetLink = _generateLink.GenerateUrl("ResetPassword", "Auth", queryParams);
+			var queryParams = $"userId={user.Id}&token={encodedToken}"; // Already encoded
+			var resetLink = LinkGenerator.GenerateUrl("ResetPassword", "Auth", queryParams);
 
 			// Replacing the {{RESET_LINK}} placeholder with the actual reset link
 			emailTemplate = emailTemplate.Replace("{{RESET_LINK}}", resetLink);
@@ -142,8 +133,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 		public async Task<string> ConfirmEmailAsync(ConfirmEmailRequest request)
 		{
-			var decodedUserId = TokenConverter.DecodeToken(request.UserId);
-			var user = await _userManager.FindByIdAsync(decodedUserId);
+			var user = await _userManager.FindByIdAsync(request.UserId);
 			if (user == null)
 			{
 				throw new ArgumentNullException("Invalid User Id");
@@ -186,8 +176,8 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 		public async Task<string> ChangePasswordAsync(ChangePasswordRequest request)
 		{
-			var userId = _httpContextAccessor.HttpContext.User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier).Value;
-			var user = await _userManager.FindByIdAsync(userId);
+
+			var user = await _userManager.FindByIdAsync(request.UserId);
 			if (user == null)
 			{
 				throw new ArgumentNullException("Invalid Id Provided");
@@ -204,8 +194,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 		public async Task<string> ResetPasswordAsync(ResetPasswordRequest request)
 		{
-			var decodedUserId = TokenConverter.DecodeToken(request.UserId);
-			var user = await _userManager.FindByIdAsync(decodedUserId);
+			var user = await _userManager.FindByIdAsync(request.UserId);
 			if (user == null)
 			{
 				throw new ArgumentNullException("user not Found");
