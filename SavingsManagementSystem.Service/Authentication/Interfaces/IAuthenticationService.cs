@@ -18,5 +18,7 @@ namespace SavingsManagementSystem.Service.Authentication.Interfaces
 
 		Task<string> ResetPasswordAsync(ResetPasswordRequest request);
 
+		Task VerifyLinkAsync(string token);
+
 	}
 }

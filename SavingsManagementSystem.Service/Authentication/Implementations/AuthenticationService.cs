@@ -9,7 +9,6 @@ using SavingsManagementSystem.Model;
 using SavingsManagementSystem.Repository.UnitOfWork.Interfaces;
 using SavingsManagementSystem.Service.Authentication.Interfaces;
 using SavingsManagementSystem.Service.Mail.Interfaces;
-using System.Security.Claims;
 
 namespace SavingsManagementSystem.Service.Authentication.Implementations
 {
@@ -78,7 +77,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			var refreshToken = _token.GenerateRefreshToken();
 			user.RefreshToken = refreshToken;
 			user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7); //sets refresh token for 7 days
-			 //updating our db
+																   //updating our db
 			await _userManager.UpdateAsync(user);
 			await _unit.SaveChangesAsync();
 
@@ -112,7 +111,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			var htmlPath = Path.Combine("StaticFiles", "Html", "ForgetPassword.html");
 			var emailTemplate = File.ReadAllText(htmlPath);
 			var queryParams = $"userId={user.Id}&token={encodedToken}"; // Already encoded
-			var resetLink = LinkGenerator.GenerateUrl("ResetPassword", "Auth", queryParams);
+			var resetLink = LinkGenerator.GenerateUrl("verifyLink", "Auth", queryParams);
 
 			// Replacing the {{RESET_LINK}} placeholder with the actual reset link
 			emailTemplate = emailTemplate.Replace("{{RESET_LINK}}", resetLink);
@@ -146,17 +145,11 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 			var decodedvToken = TokenConverter.DecodeToken(request.VToken);
 			var vToken = await _unit.VerificationToken.FetchByTokenAsync(decodedvToken);
-			var isExpired = vToken.ExpiryTime >= DateTime.UtcNow;
-			if (isExpired)
-			{
-				throw new LinkExpiredException();
-			}
-			if (vToken.IsUsed)
-			{
-				throw new InvalidOperationException("Link Has been Used");
-			}
-
-			var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (vToken == null)
+            {
+				throw new ArgumentNullException("Invalid Verification Token Provided");
+            }
+            var result = await _userManager.ConfirmEmailAsync(user, token);
 			var errors = string.Empty;
 			if (!result.Succeeded)
 			{
@@ -206,15 +199,6 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			{
 				throw new ArgumentNullException("user token is Invalid");
 			}
-			var isExpired = vToken.ExpiryTime >= DateTime.UtcNow;
-			if (isExpired)
-			{
-				throw new LinkExpiredException("The Link has expired.");
-			}
-			if (vToken.IsUsed)
-			{
-				throw new InvalidOperationException("Link Has been Used");
-			}
 
 			var isPasswordMatch = await _userManager.CheckPasswordAsync(user, request.Password);
 			if (isPasswordMatch)
@@ -238,6 +222,26 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			await _unit.SaveChangesAsync();
 
 			return "Password Changed Successfully";
+		}
+
+		public async Task VerifyLinkAsync(string token)
+		{
+			var decodedvToken = TokenConverter.DecodeToken(token);
+			var vToken = await _unit.VerificationToken.FetchByTokenAsync(decodedvToken);
+			if (vToken == null)
+			{
+				throw new ArgumentNullException("Invalid verification token provided");
+			}
+
+			var isExpired = vToken.ExpiryTime >= DateTime.UtcNow;
+			if (isExpired)
+			{
+				throw new LinkExpiredException("The Link has expired.");
+			}
+			if (vToken.IsUsed)
+			{
+				throw new InvalidOperationException("Link Has been Used");
+			}
 		}
 	}
 }
