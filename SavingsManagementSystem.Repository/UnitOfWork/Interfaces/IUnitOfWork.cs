@@ -8,10 +8,10 @@ namespace SavingsManagementSystem.Repository.UnitOfWork.Interfaces
 		IAddressRepository Address { get; }
 
 		IMemberRepository Member { get; }
-
 		ISavingRepository Saving { get; }
-
 		IOtpRepository OTP { get; }
+
+		IVTRepository VerificationToken { get; }
 
 		ITransactionRepository Transaction { get; }
 

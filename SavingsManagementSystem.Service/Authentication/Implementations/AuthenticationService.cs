@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using SavingsManagementSystem.Common.CustomExceptions;
 using SavingsManagementSystem.Common.DTOs;
 using SavingsManagementSystem.Common.UserRole;
 using SavingsManagementSystem.Common.Utilities;
 using SavingsManagementSystem.Model;
+using SavingsManagementSystem.Repository.UnitOfWork.Interfaces;
 using SavingsManagementSystem.Service.Authentication.Interfaces;
 using SavingsManagementSystem.Service.Mail.Interfaces;
 using System.Security.Claims;
@@ -16,14 +19,28 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 		private readonly ITokenService _token;
 		private readonly IMailService _mailService;
 		private readonly IHttpContextAccessor _httpContextAccessor;
+		private readonly IUnitOfWork _unit;
+		private readonly IVerificationTokenService _vTokenService;
+		private readonly IConfiguration _config;
+		private readonly GenerateLink _generateLink;
 
-		public AuthenticationService(UserManager<ApplicationUser> userManager, ITokenService token, IMailService mailService, IHttpContextAccessor httpContextAccessor)
+		public AuthenticationService(UserManager<ApplicationUser> userManager,
+			ITokenService token,
+			IMailService mailService,
+			IHttpContextAccessor httpContextAccessor,
+			IUnitOfWork unit,
+			IConfiguration config,
+			GenerateLink generateLink,
+			IVerificationTokenService vTokenService)
 		{
 			_userManager = userManager;
 			_token = token;
 			_mailService = mailService;
 			_httpContextAccessor = httpContextAccessor;
-
+			_unit = unit;
+			_config = config;
+			_generateLink = generateLink;
+			_vTokenService = vTokenService;
 		}
 
 		public async Task<RegistrationResponse> Register(ApplicationUser user, string password, UserRole role)
@@ -65,6 +82,12 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				throw new ArgumentNullException("Password Not Match");
 			}
 			var token = await _token.GetToken(user);
+			var refreshToken = _token.GenerateRefreshToken();
+			user.RefreshToken = refreshToken;
+			user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7); //sets refresh token for 7 days
+																   //updating our db
+			await _userManager.UpdateAsync(user);
+			await _unit.SaveChangesAsync();
 
 			var response = new LoginResponse
 			{
@@ -73,7 +96,8 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				LastName = user.LastName,
 				Email = user.Email,
 				Username = user.UserName,
-				Token = token
+				Token = token,
+				RefreshToken = refreshToken
 			};
 
 			return response;
@@ -87,16 +111,20 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				throw new ArgumentNullException($"Email {email} provided does not exist in our Database");
 			};
 
-			// ... (your existing code to generate the token)
-			var resetLink = $"https://example.com/reset-password?userId={user.Id}";
+			var vToken = await _vTokenService.CreateVerificationTokenAsync(user.Id, 30);
+			var encodedToken = TokenConverter.EncodeToken(vToken.Token);
+			var encodedUserId = TokenConverter.EncodeToken(user.Id);
+
+			await _unit.SaveChangesAsync();
 
 			// Load the email template from the file
-			var htmlPath = @"C:\Users\User\Desktop\Repos\SavingsManagementSytem\SavingsManagementSystem\StaticFiles\Html\ForgetPassword.html";
+			var htmlPath = Path.Combine("StaticFiles", "Html", "ForgetPassword.html");
 			var emailTemplate = File.ReadAllText(htmlPath);
+			var queryParams = $"userId={encodedUserId}&token={encodedToken}"; // Already encoded
+			var resetLink = _generateLink.GenerateUrl("ResetPassword", "Auth", queryParams);
 
-			// Replace the {{RESET_LINK}} placeholder with the actual reset link
+			// Replacing the {{RESET_LINK}} placeholder with the actual reset link
 			emailTemplate = emailTemplate.Replace("{{RESET_LINK}}", resetLink);
-
 			var mailRequest = new MailRequest()
 			{
 				Subject = "Reset Password",
@@ -114,18 +142,31 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 		public async Task<string> ConfirmEmailAsync(ConfirmEmailRequest request)
 		{
-			var user = await _userManager.FindByEmailAsync(request.Email);
+			var decodedUserId = TokenConverter.DecodeToken(request.UserId);
+			var user = await _userManager.FindByIdAsync(decodedUserId);
 			if (user == null)
 			{
-				throw new ArgumentNullException("Email {request.Email} Provided is Invalid ");
+				throw new ArgumentNullException("Invalid User Id");
+			}
+			var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+			if (token == null)
+			{
+				throw new ArgumentNullException("Invalid User Provided");
 			}
 
-			var decodedToken = TokenConverter.DecodeToken(request.Token);
-			if (decodedToken == null)
+			var decodedvToken = TokenConverter.DecodeToken(request.VToken);
+			var vToken = await _unit.VerificationToken.FetchByTokenAsync(decodedvToken);
+			var isExpired = vToken.ExpiryTime >= DateTime.UtcNow;
+			if (isExpired)
 			{
-				throw new ArgumentNullException("Invalid Token Provided");
+				throw new LinkExpiredException();
 			}
-			var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+			if (vToken.IsUsed)
+			{
+				throw new InvalidOperationException("Link Has been Used");
+			}
+
+			var result = await _userManager.ConfirmEmailAsync(user, token);
 			var errors = string.Empty;
 			if (!result.Succeeded)
 			{
@@ -135,6 +176,10 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				}
 				throw new InvalidOperationException(errors);
 			}
+
+			vToken.IsUsed = true;
+			_unit.VerificationToken.Update(vToken);
+			await _unit.SaveChangesAsync();
 
 			return "Email Confirmed Successfully";
 		}
@@ -159,19 +204,35 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 		public async Task<string> ResetPasswordAsync(ResetPasswordRequest request)
 		{
-			// Extract the encoded token from the query string
-			var userId = _httpContextAccessor.HttpContext.Request.Query["userId"].ToString();
-
-			var user = await _userManager.FindByIdAsync(userId);
+			var decodedUserId = TokenConverter.DecodeToken(request.UserId);
+			var user = await _userManager.FindByIdAsync(decodedUserId);
 			if (user == null)
 			{
 				throw new ArgumentNullException("user not Found");
 			}
+
+			var decodedvToken = TokenConverter.DecodeToken(request.VToken);
+			var vToken = await _unit.VerificationToken.FetchByTokenAsync(decodedvToken);
+			if (vToken == null)
+			{
+				throw new ArgumentNullException("user token is Invalid");
+			}
+			var isExpired = vToken.ExpiryTime >= DateTime.UtcNow;
+			if (isExpired)
+			{
+				throw new LinkExpiredException("The Link has expired.");
+			}
+			if (vToken.IsUsed)
+			{
+				throw new InvalidOperationException("Link Has been Used");
+			}
+
 			var isPasswordMatch = await _userManager.CheckPasswordAsync(user, request.Password);
 			if (isPasswordMatch)
 			{
 				throw new ArgumentNullException("you can not use your old password");
 			}
+
 			var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 			var result = await _userManager.ResetPasswordAsync(user, token, request.Password);
 			var errors = string.Empty;
@@ -183,6 +244,9 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				}
 				throw new InvalidOperationException(errors);
 			}
+			vToken.IsUsed = true;
+			_unit.VerificationToken.Update(vToken);
+			await _unit.SaveChangesAsync();
 
 			return "Password Changed Successfully";
 		}

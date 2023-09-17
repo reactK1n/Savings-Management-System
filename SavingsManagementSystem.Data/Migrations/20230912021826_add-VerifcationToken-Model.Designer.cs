@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SavingsManagementSystem.Data.Contexts;
 
@@ -11,9 +12,10 @@ using SavingsManagementSystem.Data.Contexts;
 namespace SavingsManagementSystem.Data.Migrations
 {
     [DbContext(typeof(SavingsDBContext))]
-    partial class SavingsDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230912021826_add-VerifcationToken-Model")]
+    partial class addVerifcationTokenModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -400,17 +402,17 @@ namespace SavingsManagementSystem.Data.Migrations
                     b.Property<bool>("IsUsed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("MemberId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("MemberId");
 
                     b.ToTable("VerificationTokens");
                 });
@@ -521,18 +523,13 @@ namespace SavingsManagementSystem.Data.Migrations
 
             modelBuilder.Entity("SavingsManagementSystem.Model.VerificationToken", b =>
                 {
-                    b.HasOne("SavingsManagementSystem.Model.ApplicationUser", "User")
+                    b.HasOne("SavingsManagementSystem.Model.Member", "Member")
                         .WithMany("VerificationTokens")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("SavingsManagementSystem.Model.ApplicationUser", b =>
-                {
-                    b.Navigation("VerificationTokens");
+                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("SavingsManagementSystem.Model.Member", b =>
@@ -542,6 +539,8 @@ namespace SavingsManagementSystem.Data.Migrations
                     b.Navigation("Savings");
 
                     b.Navigation("Transactions");
+
+                    b.Navigation("VerificationTokens");
                 });
 #pragma warning restore 612, 618
         }

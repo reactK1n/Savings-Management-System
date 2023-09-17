@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SavingsManagementSystem.Model
 {
@@ -21,7 +16,6 @@ namespace SavingsManagementSystem.Model
 		public DateTime Expire { get; set; }
 
 		public DateTime CreatedOn { get; set; }
-
 
 		//navigation property
 		public Member Member { get; set; }

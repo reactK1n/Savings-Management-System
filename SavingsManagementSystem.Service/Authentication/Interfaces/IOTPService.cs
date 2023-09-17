@@ -2,10 +2,8 @@
 
 namespace SavingsManagementSystem.Service.Authentication.Interfaces
 {
-	public interface ITokenService
+	public interface IOTPService
 	{
-		Task<string> GetToken(ApplicationUser user);
-
-		string GenerateRefreshToken();
+		Task<OTP> CreateOtpAsync(string memberId, int expireMinutes);
 	}
 }

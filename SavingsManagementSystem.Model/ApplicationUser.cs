@@ -10,8 +10,14 @@ namespace SavingsManagementSystem.Model
 
 		public string? ImageUri { get; set; }
 
+		public string? RefreshToken { get; set; }
+
+		public DateTime? RefreshTokenExpiryTime { get; set; }
+
 		public string? AddressId { get; set; }
 		//nav property
+
+		public ICollection<VerificationToken>? VerificationTokens { get; set; }
 
 		public Address Address { get; set; }
 	}

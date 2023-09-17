@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SavingsManagementSystem.Data.Contexts;
 
@@ -11,9 +12,10 @@ using SavingsManagementSystem.Data.Contexts;
 namespace SavingsManagementSystem.Data.Migrations
 {
     [DbContext(typeof(SavingsDBContext))]
-    partial class SavingsDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230911224819_add-Refresh-token-to-AppUser")]
+    partial class addRefreshtokentoAppUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -386,35 +388,6 @@ namespace SavingsManagementSystem.Data.Migrations
                     b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("SavingsManagementSystem.Model.VerificationToken", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpiryTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsUsed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("VerificationTokens");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -489,7 +462,7 @@ namespace SavingsManagementSystem.Data.Migrations
             modelBuilder.Entity("SavingsManagementSystem.Model.OTP", b =>
                 {
                     b.HasOne("SavingsManagementSystem.Model.Member", "Member")
-                        .WithMany("OTPs")
+                        .WithMany("OTP")
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -519,25 +492,9 @@ namespace SavingsManagementSystem.Data.Migrations
                     b.Navigation("Member");
                 });
 
-            modelBuilder.Entity("SavingsManagementSystem.Model.VerificationToken", b =>
-                {
-                    b.HasOne("SavingsManagementSystem.Model.ApplicationUser", "User")
-                        .WithMany("VerificationTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("SavingsManagementSystem.Model.ApplicationUser", b =>
-                {
-                    b.Navigation("VerificationTokens");
-                });
-
             modelBuilder.Entity("SavingsManagementSystem.Model.Member", b =>
                 {
-                    b.Navigation("OTPs");
+                    b.Navigation("OTP");
 
                     b.Navigation("Savings");
 

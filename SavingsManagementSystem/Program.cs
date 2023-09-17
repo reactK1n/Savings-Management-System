@@ -29,9 +29,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfig();
 
 
-builder.Services.AddCors(c =>
+builder.Services.AddCors(options =>
 {
-	c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+	options.AddPolicy("AllowSpecificOrigins",
+		builder =>
+		{
+			builder.WithOrigins("https://example.com", "https://another-domain.com")
+				.AllowAnyHeader()
+				.AllowAnyMethod();
+		});
 });
 
 

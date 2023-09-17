@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 using SavingsManagementSystem.Common.DTOs;
 using SavingsManagementSystem.Common.Validators.AuthenticationValidator;
 using SavingsManagementSystem.Repository.Implementations;
@@ -11,6 +13,8 @@ using SavingsManagementSystem.Service.Mail.Implementations;
 using SavingsManagementSystem.Service.Mail.Interfaces;
 using SavingsManagementSystem.Service.User.Implementations;
 using SavingsManagementSystem.Service.User.Interfaces;
+using Microsoft.AspNetCore.Mvc.Routing;
+using SavingsManagementSystem.Common.Utilities;
 
 namespace SavingsManagementSystem.Extensions
 {
@@ -18,19 +22,32 @@ namespace SavingsManagementSystem.Extensions
 	{
 		public static void AddDependencyInjection(this IServiceCollection services)
 		{
-			//add httpContext accessor
+			//add IhttpContext accessor
 			services.AddHttpContextAccessor();
+
+			// Register your GenerateLink class
+			services.AddScoped<GenerateLink>();
+
+			// Add the required services for LinkGenerator
+			services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+			services.AddScoped<IUrlHelper>(x => new UrlHelper(x.GetRequiredService<IActionContextAccessor>().ActionContext));
+
 			//Sevices DI
 			services.AddScoped<IAdminService, AdminService>();
 			services.AddScoped<IAuthenticationService, AuthenticationService>();
 			services.AddScoped<ITokenService, TokenService>();
+			services.AddScoped<IOTPService, OTPService>();
+			services.AddScoped<IVerificationTokenService, VerificationTokenService>();
+			services.AddScoped<IMailService, MailService>();
+
+
 
 			//repository DI
 			services.AddScoped<IMemberRepository, MemberRepository>();
 			services.AddScoped<ISavingRepository, SavingRepository>();
 			services.AddScoped<IOtpRepository, OtpRepository>();
 			services.AddScoped<ITransactionRepository, TransactionRepository>();
-			services.AddScoped<IMailService, MailService>();
+			services.AddScoped<IVTRepository, VTRepository>();
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 			//registering Fluent validations injection class
@@ -40,10 +57,6 @@ namespace SavingsManagementSystem.Extensions
 			services.AddScoped<IValidator<MailRequest>, MailRequestValidator>();
 			services.AddScoped<IValidator<ConfirmEmailRequest>, ConfirmEmailRequestValidator>();
 			services.AddScoped<IValidator<ChangePasswordRequest>, ChangePasswordRequestValidator>();
-
-
-
-
 
 		}
 	}

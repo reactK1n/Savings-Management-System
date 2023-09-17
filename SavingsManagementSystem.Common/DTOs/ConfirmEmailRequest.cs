@@ -2,8 +2,8 @@
 {
 	public class ConfirmEmailRequest
 	{
-		public string Email { get; set; }
+		public string VToken { get; set;}
 
-		public string Token { get; set; }
+		public string UserId { get; set; }
 	}
 }
