@@ -45,7 +45,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				{
 					errors = error.Description + Environment.NewLine;
 				}
-				throw new MissingFieldException(errors);
+				throw new InvalidOperationException(errors);
 			}
 			await _userManager.AddToRoleAsync(user, role.ToString());
 
@@ -111,7 +111,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			var htmlPath = Path.Combine("StaticFiles", "Html", "ForgetPassword.html");
 			var emailTemplate = File.ReadAllText(htmlPath);
 			var queryParams = $"userId={user.Id}&token={encodedToken}"; // Already encoded
-			var resetLink = LinkGenerator.GenerateUrl("verifyLink", "Auth", queryParams);
+			var resetLink = LinkGenerator.GenerateUrl("VerifyLink", "Auth", queryParams);
 
 			// Replacing the {{RESET_LINK}} placeholder with the actual reset link
 			emailTemplate = emailTemplate.Replace("{{RESET_LINK}}", resetLink);

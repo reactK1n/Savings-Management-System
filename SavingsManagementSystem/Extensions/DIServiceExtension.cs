@@ -28,6 +28,8 @@ namespace SavingsManagementSystem.Extensions
 			services.AddScoped<IOTPService, OTPService>();
 			services.AddScoped<IVerificationTokenService, VerificationTokenService>();
 			services.AddScoped<IMailService, MailService>();
+			services.AddScoped<IMemberService, MemberService>();
+
 
 
 

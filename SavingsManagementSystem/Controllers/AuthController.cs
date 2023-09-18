@@ -161,5 +161,37 @@ namespace SavingsManagementSystem.Controllers
 				return BadRequest();
 			}
 		}
+
+		[HttpPost]
+		[Route("verifyLink")]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> VerifyLink([FromQuery] string token)
+		{
+			try
+			{
+				await _authServices.VerifyLinkAsync(token);
+			}
+			catch (ArgumentNullException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch (InvalidOperationException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch (LinkExpiredException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch
+			{
+				return BadRequest();
+			}
+			return NoContent();
+		}
+
+
 	}
 }

@@ -1,11 +1,10 @@
 ﻿using SavingsManagementSystem.Model;
-using System.Threading.Tasks;
 
 namespace SavingsManagementSystem.Repository.Interfaces
 {
 	public interface IMemberRepository
 	{
-		Task Create(Member user);
+		Task Create(string userId);
 
 		ICollection<Member> Fetch();
 
@@ -13,8 +12,8 @@ namespace SavingsManagementSystem.Repository.Interfaces
 
 		Task<Member> FetchByOtpAsync(string otpId);
 
-		void Update(Member user);
+		void Update(Member member);
 
-		void Delete(Member user);
+		void Delete(Member member);
 	}
 }

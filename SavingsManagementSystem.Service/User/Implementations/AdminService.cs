@@ -34,6 +34,7 @@ namespace SavingsManagementSystem.Service.User.Implementations
 			{
 				FirstName = request.FirstName,
 				LastName = request.LastName,
+
 				Email = request.Email,
 				UserName = request.Username,
 				EmailConfirmed = true
@@ -48,19 +49,22 @@ namespace SavingsManagementSystem.Service.User.Implementations
 
 		public async Task<string> SendMemberInviteAsync(string email)
 		{
-			var userId = Guid.NewGuid().ToString();
 			//create a verification token for the link
-			var vToken = await _vTokenService.CreateVerificationTokenAsync(userId, 30);
+			var vToken = await _vTokenService.CreateVerificationTokenAsync(null, 30);
 			var encodedToken = TokenConverter.EncodeToken(vToken.Token);
-			await _unit.SaveChangesAsync();
+            if (encodedToken == null)
+            {
+				throw new ArgumentNullException("Token is invalid");
+            }
+            await _unit.SaveChangesAsync();
 
 			// Load the email template from the file
 			var htmlPath = Path.Combine("StaticFiles", "Html", "MemberInvite.html");
 			var emailTemplate = File.ReadAllText(htmlPath);
-			var queryParams = $"userId={userId}&token={encodedToken}";
-			var resetLink = LinkGenerator.GenerateUrl("verifyLink", "Auth", queryParams);
+			var queryParams = $"token={encodedToken}";
+			var resetLink = LinkGenerator.GenerateUrl("VerifyLink", "Auth", queryParams);
 
-			// Replacing the {{RESET_LINK}} placeholder with the actual reset link
+			// Replacing the {{INVITE_LINK}} placeholder with the actual reset link
 			emailTemplate = emailTemplate.Replace("{{INVITE_LINK}}", resetLink);
 			var mailRequest = new MailRequest()
 			{
@@ -72,7 +76,7 @@ namespace SavingsManagementSystem.Service.User.Implementations
 			var result = await _mailService.SendEmailAsync(mailRequest);
 			if (!result)
 			{
-				return "Email not Successful";
+				throw new InvalidOperationException("Operation Not Successful");
 			}
 			return "Sent Successfully";
 		}

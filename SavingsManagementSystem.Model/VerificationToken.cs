@@ -7,7 +7,7 @@ namespace SavingsManagementSystem.Model
 		public string Id { get; set; }
 
 		[ForeignKey(nameof(ApplicationUser))]
-		public string UserId { get; set; }
+		public string? UserId { get; set; }
 
 		public string Token { get; set; }
 
