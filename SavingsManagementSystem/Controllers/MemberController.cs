@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SavingsManagementSystem.Common.CustomExceptions;
 using SavingsManagementSystem.Common.DTOs;
 using SavingsManagementSystem.Service.User.Interfaces;
 
@@ -19,7 +20,7 @@ namespace SavingsManagementSystem.Controllers
 		[Route("register")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> Register([FromBody] RegistrationRequest request)
+		public async Task<IActionResult> RegisterMember([FromBody] MemberRegistrationRequest request)
 		{
 			try
 			{
@@ -31,7 +32,12 @@ namespace SavingsManagementSystem.Controllers
 				return BadRequest();
 
 			}
-			catch (InvalidOperationException ex)
+			catch(AlreadyExistsException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+
+			catch (ArgumentNullException ex)
 			{
 				return BadRequest(ex.Message);
 			}

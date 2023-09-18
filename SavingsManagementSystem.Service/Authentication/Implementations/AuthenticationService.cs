@@ -233,7 +233,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				throw new ArgumentNullException("Invalid verification token provided");
 			}
 
-			var isExpired = vToken.ExpiryTime >= DateTime.UtcNow;
+			var isExpired = vToken.ExpiryTime < DateTime.UtcNow;
 			if (isExpired)
 			{
 				throw new LinkExpiredException("The Link has expired.");

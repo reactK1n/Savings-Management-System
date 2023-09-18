@@ -28,13 +28,12 @@ namespace SavingsManagementSystem.Service.User.Implementations
 			_mailService = mailService;
 		}
 
-		public async Task<RegistrationResponse> RegisterAsync(RegistrationRequest request)
+		public async Task<RegistrationResponse> RegisterAsync(AdminRegistrationRequest request)
 		{
 			var user = new ApplicationUser
 			{
 				FirstName = request.FirstName,
 				LastName = request.LastName,
-
 				Email = request.Email,
 				UserName = request.Username,
 				EmailConfirmed = true
@@ -61,7 +60,7 @@ namespace SavingsManagementSystem.Service.User.Implementations
 			// Load the email template from the file
 			var htmlPath = Path.Combine("StaticFiles", "Html", "MemberInvite.html");
 			var emailTemplate = File.ReadAllText(htmlPath);
-			var queryParams = $"token={encodedToken}";
+			var queryParams = $"email={email}&token={encodedToken}";
 			var resetLink = LinkGenerator.GenerateUrl("VerifyLink", "Auth", queryParams);
 
 			// Replacing the {{INVITE_LINK}} placeholder with the actual reset link

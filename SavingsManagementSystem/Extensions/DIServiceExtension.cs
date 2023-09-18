@@ -44,7 +44,8 @@ namespace SavingsManagementSystem.Extensions
 			//registering Fluent validations injection class
 			services.AddScoped<IValidator<LoginRequest>, LoginRequestValidation>();
 			services.AddScoped<IValidator<ResetPasswordRequest>, ResetPasswordRequestValidation>();
-			services.AddScoped<IValidator<RegistrationRequest>, RegistrationRequestValidation>();
+			services.AddScoped<IValidator<AdminRegistrationRequest>, AdminRegistrationRequestValidation>();
+			services.AddScoped<IValidator<MemberRegistrationRequest>, MemberRegistrationRequestValidation>();
 			services.AddScoped<IValidator<MailRequest>, MailRequestValidator>();
 			services.AddScoped<IValidator<ConfirmEmailRequest>, ConfirmEmailRequestValidator>();
 			services.AddScoped<IValidator<ChangePasswordRequest>, ChangePasswordRequestValidator>();

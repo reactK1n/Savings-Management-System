@@ -1,6 +1,6 @@
 ﻿namespace SavingsManagementSystem.Common.DTOs
 {
-	public class RegistrationRequest
+	public class AdminRegistrationRequest
 	{
 
 		public string FirstName { get; set; }

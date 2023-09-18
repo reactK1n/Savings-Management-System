@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SavingsManagementSystem.Common.DTOs;
 using SavingsManagementSystem.Service.User.Interfaces;
 
@@ -20,7 +19,7 @@ namespace SavingsManagementSystem.Controllers
 		[Route("register")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> Register([FromBody] RegistrationRequest request)
+		public async Task<IActionResult> RegisterAdmin([FromBody] AdminRegistrationRequest request)
 		{
 			try
 			{
@@ -45,10 +44,10 @@ namespace SavingsManagementSystem.Controllers
 
 		[HttpPost]
 		[Route("SendInvite")]
-		[Authorize(Policy = "Admin")]
+		//[Authorize(Policy = "Admin")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> SendInvite([FromBody] string email)
+		public async Task<IActionResult> SendInvite([FromQuery] string email)
 		{
 			try
 			{
@@ -60,7 +59,7 @@ namespace SavingsManagementSystem.Controllers
 				return BadRequest();
 
 			}
-			catch(ArgumentNullException ex)
+			catch (ArgumentNullException ex)
 			{
 				return BadRequest(ex.Message);
 			}

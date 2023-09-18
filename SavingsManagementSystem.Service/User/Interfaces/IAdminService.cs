@@ -4,7 +4,7 @@ namespace SavingsManagementSystem.Service.User.Interfaces
 {
 	public interface IAdminService
 	{
-		Task<RegistrationResponse> RegisterAsync(RegistrationRequest request);
+		Task<RegistrationResponse> RegisterAsync(AdminRegistrationRequest request);
 
 		Task<string> SendMemberInviteAsync(string email);
 	}
