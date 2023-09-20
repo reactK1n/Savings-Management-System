@@ -13,6 +13,10 @@ namespace SavingsManagementSystem.Model
 
 		public bool IsUsed { get; set; }
 
+		public string Email { get; set; }
+
+		public string Status { get; set; }
+
 		public DateTime CreatedOn { get; set; }
 
 		public DateTime ExpiryTime { get; set; }

@@ -95,7 +95,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			return response;
 		}
 
-		public async Task<string> ForgetPasswordAsync(string email)
+		public async Task ForgetPasswordAsync(string email)
 		{
 			var user = await _userManager.FindByEmailAsync(email);
 			if (user == null)
@@ -103,14 +103,14 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				throw new ArgumentNullException($"Email {email} provided does not exist in our Database");
 			};
 
-			var vToken = await _vTokenService.CreateVerificationTokenAsync(user.Id, 30);
+			var vToken = await _vTokenService.CreateVerificationTokenAsync(30, "Successful", email, user.Id);
 			var encodedToken = TokenConverter.EncodeToken(vToken.Token);
 			await _unit.SaveChangesAsync();
 
 			// Load the email template from the file
 			var htmlPath = Path.Combine("StaticFiles", "Html", "ForgetPassword.html");
 			var emailTemplate = File.ReadAllText(htmlPath);
-			var queryParams = $"userId={user.Id}&token={encodedToken}"; // Already encoded
+            var queryParams = $"userId={user.Id}&token={encodedToken}"; // Already encoded
 			var resetLink = LinkGenerator.GenerateUrl("VerifyLink", "Auth", queryParams);
 
 			// Replacing the {{RESET_LINK}} placeholder with the actual reset link
@@ -122,13 +122,18 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				Body = emailTemplate
 
 			};
-			var result = await _mailService.SendEmailAsync(mailRequest);
-			if (!result)
+			try
 			{
-				return "Email not Successful";
+				await _mailService.SendEmailAsync(mailRequest);
 			}
-			return "Sent Successfully";
+			catch
+			{
+				vToken.Status = "Fail";
+				_unit.VerificationToken.Update(vToken);
+				await _unit.SaveChangesAsync();
+			}
 		}
+
 
 		public async Task<string> ConfirmEmailAsync(ConfirmEmailRequest request)
 		{
@@ -145,11 +150,11 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 			var decodedvToken = TokenConverter.DecodeToken(request.VToken);
 			var vToken = await _unit.VerificationToken.FetchByTokenAsync(decodedvToken);
-            if (vToken == null)
-            {
+			if (vToken == null)
+			{
 				throw new ArgumentNullException("Invalid Verification Token Provided");
-            }
-            var result = await _userManager.ConfirmEmailAsync(user, token);
+			}
+			var result = await _userManager.ConfirmEmailAsync(user, token);
 			var errors = string.Empty;
 			if (!result.Succeeded)
 			{

@@ -6,6 +6,6 @@ namespace SavingsManagementSystem.Service.User.Interfaces
 	{
 		Task<RegistrationResponse> RegisterAsync(AdminRegistrationRequest request);
 
-		Task<string> SendMemberInviteAsync(string email);
+		Task SendMemberInviteAsync(string email);
 	}
 }

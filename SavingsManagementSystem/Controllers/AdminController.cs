@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SavingsManagementSystem.Common.DTOs;
 using SavingsManagementSystem.Service.User.Interfaces;
 
@@ -44,20 +45,15 @@ namespace SavingsManagementSystem.Controllers
 
 		[HttpPost]
 		[Route("SendInvite")]
-		//[Authorize(Policy = "Admin")]
+		[Authorize(Policy = "Admin")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> SendInvite([FromQuery] string email)
 		{
 			try
 			{
-				var response = await _adminService.SendMemberInviteAsync(email);
-				if (response != null)
-				{
-					return Ok(response);
-				}
-				return BadRequest();
-
+				await _adminService.SendMemberInviteAsync(email);
+				return NoContent();
 			}
 			catch (ArgumentNullException ex)
 			{

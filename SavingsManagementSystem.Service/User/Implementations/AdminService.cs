@@ -46,38 +46,38 @@ namespace SavingsManagementSystem.Service.User.Implementations
 		}
 
 
-		public async Task<string> SendMemberInviteAsync(string email)
+		public async Task SendMemberInviteAsync(string email)
 		{
 			//create a verification token for the link
-			var vToken = await _vTokenService.CreateVerificationTokenAsync(null, 30);
+			var vToken = await _vTokenService.CreateVerificationTokenAsync(30, "Successful", email);
+			if (vToken == null)
+			{
+				throw new InvalidOperationException("Operation Failed...");
+			}
 			var encodedToken = TokenConverter.EncodeToken(vToken.Token);
-            if (encodedToken == null)
-            {
-				throw new ArgumentNullException("Token is invalid");
-            }
-            await _unit.SaveChangesAsync();
+			await _unit.SaveChangesAsync();
 
 			// Load the email template from the file
 			var htmlPath = Path.Combine("StaticFiles", "Html", "MemberInvite.html");
 			var emailTemplate = File.ReadAllText(htmlPath);
 			var queryParams = $"email={email}&token={encodedToken}";
-			var resetLink = LinkGenerator.GenerateUrl("VerifyLink", "Auth", queryParams);
+			var inviteLink = LinkGenerator.GenerateUrl("VerifyLink", "Auth", queryParams);
 
 			// Replacing the {{INVITE_LINK}} placeholder with the actual reset link
-			emailTemplate = emailTemplate.Replace("{{INVITE_LINK}}", resetLink);
+			emailTemplate = emailTemplate.Replace("{{INVITE_LINK}}", inviteLink);
 			var mailRequest = new MailRequest()
 			{
-				Subject = "Reset Password",
+				Subject = "Member Invite",
 				RecipientEmail = email,
 				Body = emailTemplate
-
 			};
-			var result = await _mailService.SendEmailAsync(mailRequest);
-			if (!result)
+			try{ await _mailService.SendEmailAsync(mailRequest);}
+			catch 
 			{
-				throw new InvalidOperationException("Operation Not Successful");
+				vToken.Status = "Fail";
+				_unit.VerificationToken.Update(vToken);
+				await _unit.SaveChangesAsync();
 			}
-			return "Sent Successfully";
 		}
 
 	}
