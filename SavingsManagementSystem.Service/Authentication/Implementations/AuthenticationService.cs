@@ -105,7 +105,8 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				throw new ArgumentNullException($"Email {email} provided does not exist in our Database");
 			};
 
-			var vToken = await _vTokenService.CreateVerificationTokenAsync(30, "Successful", email, user.Id);
+			var expiryTime = DateTime.UtcNow.AddMinutes(30);
+			var vToken = await _vTokenService.CreateVerificationTokenAsync(expiryTime, email, user.Id);
 			var encodedToken = TokenConverter.EncodeToken(vToken.Token);
 			await _unit.SaveChangesAsync();
 
@@ -127,6 +128,9 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			try
 			{
 				await _mailService.SendEmailAsync(mailRequest);
+				vToken.Status = "Successful";
+				_unit.VerificationToken.Update(vToken);
+				await _unit.SaveChangesAsync();
 			}
 			catch
 			{

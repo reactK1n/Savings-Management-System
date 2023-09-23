@@ -40,6 +40,14 @@ namespace SavingsManagementSystem.Service.User.Implementations
 			{
 				throw new AlreadyExistsException("email has already registered in our database, Login To your Account ");
 			}
+
+			var decodedToken = TokenConverter.DecodeToken(request.Token);
+			var vToken = await _unit.VerificationToken.FetchByTokenAsync(decodedToken);
+			if (vToken == null || vToken.Email != request.Email)
+			{
+				throw new ArgumentNullException("Invalid token provided");
+			}
+
 			var user = new ApplicationUser
 			{
 				FirstName = request.FirstName,
@@ -49,12 +57,6 @@ namespace SavingsManagementSystem.Service.User.Implementations
 				EmailConfirmed = true
 			};
 
-			var decodedToken = TokenConverter.DecodeToken(request.Token);
-			var vToken = await _unit.VerificationToken.FetchByTokenAsync(decodedToken);
-			if (vToken == null)
-			{
-				throw new ArgumentNullException("Invalid token provided");
-			}
 			var response = await _auth.Register(user, request.Password, UserRole.Member);
 			if (response == null)
 			{

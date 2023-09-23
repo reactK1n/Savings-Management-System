@@ -14,9 +14,8 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			_unit = unit;
 		}
 
-		public async Task<VerificationToken> CreateVerificationTokenAsync(int expiryMinutes, string status, string email, string? userId = null)
+		public async Task<VerificationToken> CreateVerificationTokenAsync(DateTime expiryMinutes, string email, string? status = null, string? userId = null)
 		{
-			var createdOn = DateTime.UtcNow;
 			var vToken = new VerificationToken
 			{
 				Id = Guid.NewGuid().ToString(),
@@ -25,8 +24,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				Status = status,
 				Email = email,
 				IsUsed = false,
-				CreatedOn = createdOn,
-				ExpiryTime = createdOn.AddMinutes(expiryMinutes)
+				ExpiryTime = expiryMinutes
 			};
 			await _unit.VerificationToken.Create(vToken);
 			return vToken;

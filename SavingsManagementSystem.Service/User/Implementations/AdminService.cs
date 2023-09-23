@@ -49,11 +49,8 @@ namespace SavingsManagementSystem.Service.User.Implementations
 		public async Task SendMemberInviteAsync(string email)
 		{
 			//create a verification token for the link
-			var vToken = await _vTokenService.CreateVerificationTokenAsync(30, "Successful", email);
-			if (vToken == null)
-			{
-				throw new InvalidOperationException("Operation Failed...");
-			}
+			var expiryTime = DateTime.UtcNow.AddMinutes(30);
+			var vToken = await _vTokenService.CreateVerificationTokenAsync(expiryTime, email);
 			var encodedToken = TokenConverter.EncodeToken(vToken.Token);
 			await _unit.SaveChangesAsync();
 
@@ -71,7 +68,13 @@ namespace SavingsManagementSystem.Service.User.Implementations
 				RecipientEmail = email,
 				Body = emailTemplate
 			};
-			try{ await _mailService.SendEmailAsync(mailRequest);}
+			try
+			{
+				await _mailService.SendEmailAsync(mailRequest);
+				vToken.Status = "Successful";
+				_unit.VerificationToken.Update(vToken);
+				await _unit.SaveChangesAsync();
+			}
 			catch 
 			{
 				vToken.Status = "Fail";

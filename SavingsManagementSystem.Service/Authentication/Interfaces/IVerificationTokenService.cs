@@ -4,6 +4,6 @@ namespace SavingsManagementSystem.Service.Authentication.Interfaces
 {
 	public interface IVerificationTokenService
 	{
-		Task<VerificationToken> CreateVerificationTokenAsync(int expiryMinutes, string messageStatus, string email, string? userId = null);
+		Task<VerificationToken> CreateVerificationTokenAsync(DateTime expiryMinutes, string email, string? status = null, string? userId = null);
 	}
 }
