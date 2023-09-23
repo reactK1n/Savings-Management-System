@@ -9,6 +9,7 @@ using SavingsManagementSystem.Model;
 using SavingsManagementSystem.Repository.UnitOfWork.Interfaces;
 using SavingsManagementSystem.Service.Authentication.Interfaces;
 using SavingsManagementSystem.Service.Mail.Interfaces;
+using System.Security.Claims;
 
 namespace SavingsManagementSystem.Service.Authentication.Implementations
 {
@@ -17,6 +18,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly ITokenService _token;
 		private readonly IMailService _mailService;
+		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly IUnitOfWork _unit;
 		private readonly IVerificationTokenService _vTokenService;
 
@@ -31,6 +33,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			_userManager = userManager;
 			_token = token;
 			_mailService = mailService;
+			_httpContextAccessor = httpContextAccessor;
 			_unit = unit;
 			_vTokenService = vTokenService;
 		}
@@ -45,7 +48,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				{
 					errors = error.Description + Environment.NewLine;
 				}
-				throw new InvalidOperationException(errors);
+				throw new Exception(errors);
 			}
 			await _userManager.AddToRoleAsync(user, role.ToString());
 
@@ -55,7 +58,6 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				LastName = user.LastName,
 				Email = user.Email,
 				Username = user.UserName
-
 			};
 
 			return response;
@@ -174,8 +176,8 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 		public async Task<string> ChangePasswordAsync(ChangePasswordRequest request)
 		{
-
-			var user = await _userManager.FindByIdAsync(request.UserId);
+			var userId =  _httpContextAccessor.HttpContext.User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier).Value;
+			var user = await _userManager.FindByIdAsync(userId);
 			if (user == null)
 			{
 				throw new ArgumentNullException("Invalid Id Provided");

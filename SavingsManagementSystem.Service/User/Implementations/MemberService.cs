@@ -32,6 +32,7 @@ namespace SavingsManagementSystem.Service.User.Implementations
 			_userManager = userManager;
 		}
 
+
 		public async Task<RegistrationResponse> RegisterAsync(MemberRegistrationRequest request)
 		{
 			var emailUser = _userManager.FindByEmailAsync(request.Email);
@@ -48,16 +49,16 @@ namespace SavingsManagementSystem.Service.User.Implementations
 				EmailConfirmed = true
 			};
 
-			var response = await _auth.Register(user, request.Password, UserRole.Member);
-			if (response == null)
-			{
-				throw new ArgumentNullException("No response provided");
-			}
 			var decodedToken = TokenConverter.DecodeToken(request.Token);
 			var vToken = await _unit.VerificationToken.FetchByTokenAsync(decodedToken);
 			if (vToken == null)
 			{
 				throw new ArgumentNullException("Invalid token provided");
+			}
+			var response = await _auth.Register(user, request.Password, UserRole.Member);
+			if (response == null)
+			{
+				throw new ArgumentNullException("Unable to Register User at the moment");
 			}
 
 			await _unit.Member.Create(user.Id);
