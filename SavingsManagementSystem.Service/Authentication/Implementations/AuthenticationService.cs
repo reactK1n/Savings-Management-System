@@ -21,8 +21,6 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly IUnitOfWork _unit;
 		private readonly IVerificationTokenService _vTokenService;
-		private readonly IConfiguration _config;
-		private readonly GenerateLink _generateLink;
 
 		public AuthenticationService(UserManager<ApplicationUser> userManager,
 			ITokenService token,
@@ -30,7 +28,6 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			IHttpContextAccessor httpContextAccessor,
 			IUnitOfWork unit,
 			IConfiguration config,
-			GenerateLink generateLink,
 			IVerificationTokenService vTokenService)
 		{
 			_userManager = userManager;
@@ -38,8 +35,6 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			_mailService = mailService;
 			_httpContextAccessor = httpContextAccessor;
 			_unit = unit;
-			_config = config;
-			_generateLink = generateLink;
 			_vTokenService = vTokenService;
 		}
 
@@ -53,7 +48,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				{
 					errors = error.Description + Environment.NewLine;
 				}
-				throw new MissingFieldException(errors);
+				throw new Exception(errors);
 			}
 			await _userManager.AddToRoleAsync(user, role.ToString());
 
@@ -63,7 +58,6 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				LastName = user.LastName,
 				Email = user.Email,
 				Username = user.UserName
-
 			};
 
 			return response;
@@ -103,7 +97,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			return response;
 		}
 
-		public async Task<string> ForgetPasswordAsync(string email)
+		public async Task ForgetPasswordAsync(string email)
 		{
 			var user = await _userManager.FindByEmailAsync(email);
 			if (user == null)
@@ -111,17 +105,16 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				throw new ArgumentNullException($"Email {email} provided does not exist in our Database");
 			};
 
-			var vToken = await _vTokenService.CreateVerificationTokenAsync(user.Id, 30);
+			var expiryTime = DateTime.UtcNow.AddMinutes(30);
+			var vToken = await _vTokenService.CreateVerificationTokenAsync(expiryTime, email, user.Id);
 			var encodedToken = TokenConverter.EncodeToken(vToken.Token);
-			var encodedUserId = TokenConverter.EncodeToken(user.Id);
-
 			await _unit.SaveChangesAsync();
 
 			// Load the email template from the file
 			var htmlPath = Path.Combine("StaticFiles", "Html", "ForgetPassword.html");
 			var emailTemplate = File.ReadAllText(htmlPath);
-			var queryParams = $"userId={encodedUserId}&token={encodedToken}"; // Already encoded
-			var resetLink = _generateLink.GenerateUrl("ResetPassword", "Auth", queryParams);
+            var queryParams = $"userId={user.Id}&token={encodedToken}"; // Already encoded
+			var resetLink = LinkGenerator.GenerateUrl("VerifyLink", "Auth", queryParams);
 
 			// Replacing the {{RESET_LINK}} placeholder with the actual reset link
 			emailTemplate = emailTemplate.Replace("{{RESET_LINK}}", resetLink);
@@ -132,18 +125,25 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 				Body = emailTemplate
 
 			};
-			var result = await _mailService.SendEmailAsync(mailRequest);
-			if (!result)
+			try
 			{
-				return "Email not Successful";
+				await _mailService.SendEmailAsync(mailRequest);
+				vToken.Status = "Successful";
+				_unit.VerificationToken.Update(vToken);
+				await _unit.SaveChangesAsync();
 			}
-			return "Sent Successfully";
+			catch
+			{
+				vToken.Status = "Fail";
+				_unit.VerificationToken.Update(vToken);
+				await _unit.SaveChangesAsync();
+			}
 		}
+
 
 		public async Task<string> ConfirmEmailAsync(ConfirmEmailRequest request)
 		{
-			var decodedUserId = TokenConverter.DecodeToken(request.UserId);
-			var user = await _userManager.FindByIdAsync(decodedUserId);
+			var user = await _userManager.FindByIdAsync(request.UserId);
 			if (user == null)
 			{
 				throw new ArgumentNullException("Invalid User Id");
@@ -156,16 +156,10 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 			var decodedvToken = TokenConverter.DecodeToken(request.VToken);
 			var vToken = await _unit.VerificationToken.FetchByTokenAsync(decodedvToken);
-			var isExpired = vToken.ExpiryTime >= DateTime.UtcNow;
-			if (isExpired)
+			if (vToken == null)
 			{
-				throw new LinkExpiredException();
+				throw new ArgumentNullException("Invalid Verification Token Provided");
 			}
-			if (vToken.IsUsed)
-			{
-				throw new InvalidOperationException("Link Has been Used");
-			}
-
 			var result = await _userManager.ConfirmEmailAsync(user, token);
 			var errors = string.Empty;
 			if (!result.Succeeded)
@@ -186,7 +180,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 		public async Task<string> ChangePasswordAsync(ChangePasswordRequest request)
 		{
-			var userId = _httpContextAccessor.HttpContext.User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier).Value;
+			var userId =  _httpContextAccessor.HttpContext.User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier).Value;
 			var user = await _userManager.FindByIdAsync(userId);
 			if (user == null)
 			{
@@ -204,8 +198,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 		public async Task<string> ResetPasswordAsync(ResetPasswordRequest request)
 		{
-			var decodedUserId = TokenConverter.DecodeToken(request.UserId);
-			var user = await _userManager.FindByIdAsync(decodedUserId);
+			var user = await _userManager.FindByIdAsync(request.UserId);
 			if (user == null)
 			{
 				throw new ArgumentNullException("user not Found");
@@ -216,15 +209,6 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			if (vToken == null)
 			{
 				throw new ArgumentNullException("user token is Invalid");
-			}
-			var isExpired = vToken.ExpiryTime >= DateTime.UtcNow;
-			if (isExpired)
-			{
-				throw new LinkExpiredException("The Link has expired.");
-			}
-			if (vToken.IsUsed)
-			{
-				throw new InvalidOperationException("Link Has been Used");
 			}
 
 			var isPasswordMatch = await _userManager.CheckPasswordAsync(user, request.Password);
@@ -249,6 +233,26 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			await _unit.SaveChangesAsync();
 
 			return "Password Changed Successfully";
+		}
+
+		public async Task VerifyLinkAsync(string token)
+		{
+			var decodedvToken = TokenConverter.DecodeToken(token);
+			var vToken = await _unit.VerificationToken.FetchByTokenAsync(decodedvToken);
+			if (vToken == null)
+			{
+				throw new ArgumentNullException("Invalid verification token provided");
+			}
+
+			var isExpired = vToken.ExpiryTime < DateTime.UtcNow;
+			if (isExpired)
+			{
+				throw new LinkExpiredException("The Link has expired.");
+			}
+			if (vToken.IsUsed)
+			{
+				throw new InvalidOperationException("Link Has been Used");
+			}
 		}
 	}
 }

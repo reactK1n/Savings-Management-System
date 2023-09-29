@@ -14,17 +14,17 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			_unit = unit;
 		}
 
-		public async Task<VerificationToken> CreateVerificationTokenAsync(string userId, int expiryMinutes)
+		public async Task<VerificationToken> CreateVerificationTokenAsync(DateTime expiryMinutes, string email, string? status = null, string? userId = null)
 		{
-			var createdOn = DateTime.UtcNow;
 			var vToken = new VerificationToken
 			{
 				Id = Guid.NewGuid().ToString(),
 				UserId = userId,
 				Token = Guid.NewGuid().ToString(),
+				Status = status,
+				Email = email,
 				IsUsed = false,
-				CreatedOn = createdOn,
-				ExpiryTime = createdOn.AddMinutes(expiryMinutes)
+				ExpiryTime = expiryMinutes
 			};
 			await _unit.VerificationToken.Create(vToken);
 			return vToken;

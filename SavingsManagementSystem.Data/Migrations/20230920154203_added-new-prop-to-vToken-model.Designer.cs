@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SavingsManagementSystem.Data.Contexts;
 
@@ -11,9 +12,10 @@ using SavingsManagementSystem.Data.Contexts;
 namespace SavingsManagementSystem.Data.Migrations
 {
     [DbContext(typeof(SavingsDBContext))]
-    partial class SavingsDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230920154203_added-new-prop-to-vToken-model")]
+    partial class addednewproptovTokenmodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -395,22 +397,22 @@ namespace SavingsManagementSystem.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("ExpiryTime")
+                    b.Property<DateTime>("ExpiryTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsUsed")
                         .HasColumnType("bit");
 
                     b.Property<string>("Status")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Token")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");

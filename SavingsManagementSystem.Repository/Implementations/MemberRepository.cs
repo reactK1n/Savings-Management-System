@@ -14,9 +14,13 @@ namespace SavingsManagementSystem.Repository.Implementations
 			_dbSet = context.Set<Member>();
 		}
 
-		public async Task Create(Member user)
+		public async Task Create(string userId)
 		{
-			await _dbSet.AddAsync(user);
+			var member = new Member
+			{
+				UserId = userId
+			};
+			await _dbSet.AddAsync(member);
 		}
 
 		public ICollection<Member> Fetch()
@@ -36,14 +40,14 @@ namespace SavingsManagementSystem.Repository.Implementations
 			return user;
 		}
 
-		public new void Update(Member user)
+		public new void Update(Member member)
 		{
-			_dbSet.Update(user);
+			_dbSet.Update(member);
 		}
 
-		public new void Delete(Member user)
+		public new void Delete(Member member)
 		{
-			_dbSet.Remove(user);
+			_dbSet.Remove(member);
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SavingsManagementSystem.Common.DTOs;
 using SavingsManagementSystem.Service.User.Interfaces;
 
@@ -19,7 +20,7 @@ namespace SavingsManagementSystem.Controllers
 		[Route("register")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> Register([FromBody] RegistrationRequest request)
+		public async Task<IActionResult> RegisterAdmin([FromBody] AdminRegistrationRequest request)
 		{
 			try
 			{
@@ -31,7 +32,30 @@ namespace SavingsManagementSystem.Controllers
 				return BadRequest();
 
 			}
-			catch (MissingFieldException ex)
+			catch (InvalidOperationException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch
+			{
+				return BadRequest();
+			}
+		}
+
+
+		[HttpPost]
+		[Route("SendInvite")]
+		[Authorize(Policy = "Admin")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> SendInvite([FromQuery] string email)
+		{
+			try
+			{
+				await _adminService.SendMemberInviteAsync(email);
+				return NoContent();
+			}
+			catch (ArgumentNullException ex)
 			{
 				return BadRequest(ex.Message);
 			}

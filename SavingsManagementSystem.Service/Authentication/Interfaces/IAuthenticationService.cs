@@ -10,13 +10,15 @@ namespace SavingsManagementSystem.Service.Authentication.Interfaces
 
 		Task<LoginResponse> Login(LoginRequest loginRequest);
 
-		Task<string> ForgetPasswordAsync(string email);
+		Task ForgetPasswordAsync(string email);
 
 		Task<string> ConfirmEmailAsync(ConfirmEmailRequest request);
 
 		Task<string> ChangePasswordAsync(ChangePasswordRequest request);
 
 		Task<string> ResetPasswordAsync(ResetPasswordRequest request);
+
+		Task VerifyLinkAsync(string token);
 
 	}
 }

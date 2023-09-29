@@ -9,6 +9,7 @@ namespace SavingsManagementSystem.Common.Validators.AuthenticationValidator
 		public ChangePasswordRequestValidator()
 		{
 			RuleFor(user => user.OldPassword).PassWord();
+
 			RuleFor(user => user.NewPassword).PassWord();
 		}
 	}
