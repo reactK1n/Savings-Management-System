@@ -9,8 +9,11 @@ namespace SavingsManagementSystem.Extensions
 		{
 			services.AddDbContextPool<SavingsDBContext>(opt =>
 			{
-				//registering of database service
-				opt.UseSqlServer(config["ConnectionStrings:DefaultConnectionString"]);
+
+					//registering of database service
+					opt.UseNpgsql(config["ConnectionStrings:PostgresConnectionString"]);
+					
+
 			});
 		}
 	}
