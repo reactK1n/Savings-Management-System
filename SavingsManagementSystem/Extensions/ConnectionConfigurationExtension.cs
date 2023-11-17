@@ -3,14 +3,20 @@ using SavingsManagementSystem.Data.Contexts;
 
 namespace SavingsManagementSystem.Extensions
 {
-    public static class ConnectionConfigurationExtension
+	public static class ConnectionConfigurationExtension
 	{
 		public static void AddDbContextAndConfigurations(this IServiceCollection services, IConfiguration config)
 		{
+
 			services.AddDbContextPool<SavingsDBContext>(opt =>
 			{
+
 				//registering of database service
-				opt.UseSqlServer(config["ConnectionStrings:DefaultConnectionString"]);
+				opt.UseNpgsql(config.GetConnectionString("PostgresConnectionString"));
+				//opt.UseNpgsql(config["ConnectionStrings:PostgresConnectionString"]);
+				//opt.UseSqlServer(config["ConnectionStrings:SqlConnectionString"]);
+
+
 			});
 		}
 	}

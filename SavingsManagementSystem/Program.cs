@@ -1,5 +1,4 @@
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
 using SavingsManagementSystem.Data.AddToRole;
 using SavingsManagementSystem.Extensions;
 using SavingsManagementSystem.Policies;
@@ -8,6 +7,9 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+//adding serilog
+builder.AddLogger();
 
 builder.Services.AddControllers()
 	.AddFluentValidation(fv =>
@@ -44,11 +46,9 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-	app.UseSwagger();
-	app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.InitRoles();
 app.UseHttpsRedirection();

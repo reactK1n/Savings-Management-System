@@ -12,8 +12,8 @@ using SavingsManagementSystem.Data.Contexts;
 namespace SavingsManagementSystem.Data.Migrations
 {
     [DbContext(typeof(SavingsDBContext))]
-    [Migration("20230902234631_nullify-AddressId-in-User")]
-    partial class nullifyAddressIdinUser
+    [Migration("20231116000033_changeToSqlServe")]
+    partial class changeToSqlServe
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -212,7 +212,6 @@ namespace SavingsManagementSystem.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUri")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
@@ -241,6 +240,12 @@ namespace SavingsManagementSystem.Data.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -383,6 +388,42 @@ namespace SavingsManagementSystem.Data.Migrations
                     b.ToTable("Transactions");
                 });
 
+            modelBuilder.Entity("SavingsManagementSystem.Model.VerificationToken", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ExpiryTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("VerificationTokens");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -457,7 +498,7 @@ namespace SavingsManagementSystem.Data.Migrations
             modelBuilder.Entity("SavingsManagementSystem.Model.OTP", b =>
                 {
                     b.HasOne("SavingsManagementSystem.Model.Member", "Member")
-                        .WithMany("OTP")
+                        .WithMany("OTPs")
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -487,9 +528,23 @@ namespace SavingsManagementSystem.Data.Migrations
                     b.Navigation("Member");
                 });
 
+            modelBuilder.Entity("SavingsManagementSystem.Model.VerificationToken", b =>
+                {
+                    b.HasOne("SavingsManagementSystem.Model.ApplicationUser", "User")
+                        .WithMany("VerificationTokens")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SavingsManagementSystem.Model.ApplicationUser", b =>
+                {
+                    b.Navigation("VerificationTokens");
+                });
+
             modelBuilder.Entity("SavingsManagementSystem.Model.Member", b =>
                 {
-                    b.Navigation("OTP");
+                    b.Navigation("OTPs");
 
                     b.Navigation("Savings");
 

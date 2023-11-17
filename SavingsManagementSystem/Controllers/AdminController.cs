@@ -10,10 +10,12 @@ namespace SavingsManagementSystem.Controllers
 	public class AdminController : ControllerBase
 	{
 		private readonly IAdminService _adminService;
+		private readonly ILogger<AdminController> _logger;
 
-		public AdminController(IAdminService adminService)
+		public AdminController(IAdminService adminService, ILogger<AdminController> logger)
 		{
 			_adminService = adminService;
+			_logger = logger;
 		}
 
 		[HttpPost]
@@ -22,6 +24,7 @@ namespace SavingsManagementSystem.Controllers
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> RegisterAdmin([FromBody] AdminRegistrationRequest request)
 		{
+			_logger.LogInformation("admin registration is executing.......");
 			try
 			{
 				var response = await _adminService.RegisterAsync(request);
