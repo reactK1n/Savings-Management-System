@@ -1,5 +1,4 @@
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
 using SavingsManagementSystem.Data.AddToRole;
 using SavingsManagementSystem.Extensions;
 using SavingsManagementSystem.Policies;
@@ -8,6 +7,9 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+//adding serilog
+builder.AddLogger();
 
 builder.Services.AddControllers()
 	.AddFluentValidation(fv =>
