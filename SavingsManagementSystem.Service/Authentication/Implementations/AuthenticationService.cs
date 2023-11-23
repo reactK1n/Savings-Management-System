@@ -78,7 +78,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			var token = await _token.GetToken(user);
 			var refreshToken = _token.GenerateRefreshToken();
 			user.RefreshToken = refreshToken;
-			user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7); //sets refresh token for 7 days
+			user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); //sets refresh token for 7 days
 																   //updating our db
 			await _userManager.UpdateAsync(user);
 			await _unit.SaveChangesAsync();
