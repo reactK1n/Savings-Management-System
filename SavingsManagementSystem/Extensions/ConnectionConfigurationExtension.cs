@@ -12,9 +12,9 @@ namespace SavingsManagementSystem.Extensions
 			{
 
 				//registering of database service
-				opt.UseNpgsql(config.GetConnectionString("PostgresConnectionString"));
+				//opt.UseNpgsql(config.GetConnectionString("PostgresConnectionString"));
 				//opt.UseNpgsql(config["ConnectionStrings:PostgresConnectionString"]);
-				//opt.UseSqlServer(config["ConnectionStrings:SqlConnectionString"]);
+				opt.UseSqlServer(config["ConnectionStrings:SqlConnectionString"]);
 
 
 			});

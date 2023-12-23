@@ -12,8 +12,8 @@ using SavingsManagementSystem.Data.Contexts;
 namespace SavingsManagementSystem.Data.Migrations
 {
     [DbContext(typeof(SavingsDBContext))]
-    [Migration("20231111102529_SavingsDb")]
-    partial class SavingsDb
+    [Migration("20231212131253_initialMigration")]
+    partial class initialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
