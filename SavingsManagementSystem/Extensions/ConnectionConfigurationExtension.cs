@@ -13,7 +13,14 @@ namespace SavingsManagementSystem.Extensions
 			{
 
 				//registering of database service
-				opt.UseNpgsql(config["ConnectionStrings:RenderPostgreConnection"]);
+				var connectionString = config["ConnectionStrings:RenderPostgreConnection"];
+				if (connectionString == null)
+				{
+					Console.WriteLine("connection string is null");
+					return;
+				}
+				opt.UseNpgsql(connectionString);
+
 			/*	if (env.IsDevelopment())
 				{
 					opt.UseSqlServer(config["ConnectionStrings:SqlConnectionString"]);
