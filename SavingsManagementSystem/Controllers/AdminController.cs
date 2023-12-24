@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Mailjet.Client.Resources;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SavingsManagementSystem.Common.DTOs;
@@ -81,9 +82,9 @@ namespace SavingsManagementSystem.Controllers
 			{
 				return BadRequest(ex.Message);
 			}
-			catch
+			catch(Exception ex)
 			{
-				return BadRequest();
+				return BadRequest(ex.Message);
 			}
 		}
 

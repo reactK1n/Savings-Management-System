@@ -13,9 +13,8 @@ namespace SavingsManagementSystem.Extensions
 			{
 
 				//registering of database service
-				//opt.UseNpgsql(config.GetConnectionString("PostgresConnectionString"));
-				//opt.UseNpgsql(config["ConnectionStrings:PostgresConnectionString"]);
-				if (env.IsDevelopment())
+				opt.UseNpgsql(config["ConnectionStrings:RenderPostgreConnection"]);
+			/*	if (env.IsDevelopment())
 				{
 					opt.UseSqlServer(config["ConnectionStrings:SqlConnectionString"]);
                     Console.WriteLine("Local db used");
@@ -23,7 +22,7 @@ namespace SavingsManagementSystem.Extensions
 				}
                 opt.UseInMemoryDatabase("InMemoryDatabase");
 
-				Console.WriteLine("In Memory database used");
+				Console.WriteLine("In Memory database used");*/
 			});
 		}
 	}
