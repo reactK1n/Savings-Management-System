@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using SavingsManagementSystem.Data.Contexts;
 
@@ -13,7 +14,8 @@ namespace SavingsManagementSystem.Extensions
 			{
 
 				//registering of database service
-				var connectionString = config["ConnectionStrings:RenderPostgreConnection"];
+				//var connectionString = config["ConnectionStrings:RenderPostgreConnection"];
+				var connectionString = config.GetConnectionString("RenderPostgreConnection");
 				if (connectionString == null)
 				{
 					Console.WriteLine("connection string is null");
