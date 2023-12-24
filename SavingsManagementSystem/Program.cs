@@ -11,12 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 //adding serilog
 builder.AddLogger();
 
-builder.Services.AddControllers()
-	.AddFluentValidation(fv =>
-	fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
+builder.Services.AddControllers();
+
+builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 
 //register dbContext
-builder.Services.AddDbContextAndConfigurations(builder.Configuration);
+builder.Services.AddDbContextAndConfigurations(builder.Environment, builder.Configuration);
 //adding dependency injection container
 builder.Services.AddDependencyInjection();
 //Configure Identity options
@@ -31,7 +31,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfig();
 
 
-builder.Services.AddCors(options =>
+/*builder.Services.AddCors(options =>
 {
 	options.AddPolicy("AllowSpecificOrigins",
 		builder =>
@@ -40,7 +40,7 @@ builder.Services.AddCors(options =>
 				.AllowAnyHeader()
 				.AllowAnyMethod();
 		});
-});
+});*/
 
 
 var app = builder.Build();
