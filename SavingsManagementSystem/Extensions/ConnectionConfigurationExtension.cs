@@ -16,6 +16,7 @@ namespace SavingsManagementSystem.Extensions
 				//registering of database service
 				//var connectionString = config["ConnectionStrings:RenderPostgreConnection"];
 				var connectionString = config.GetConnectionString("RenderPostgreConnection");
+				Console.WriteLine($"Connection String: {connectionString}");
 				if (connectionString == null)
 				{
 					Console.WriteLine("connection string is null");
