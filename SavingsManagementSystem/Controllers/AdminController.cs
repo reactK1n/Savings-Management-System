@@ -42,8 +42,7 @@ namespace SavingsManagementSystem.Controllers
 			_logger.LogInformation("admin registration is executing.......");
 			try
 			{
-				var res = await _unit.Member.FetchByOtpAsync("187585");
-				var response = _userManager.Users.ToList();
+				var response = "it is working........";
 				if (response != null)
 				{
 					return Ok(response);
