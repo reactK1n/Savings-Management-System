@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using SavingsManagementSystem.Data.Contexts;
 
 namespace SavingsManagementSystem.Extensions
@@ -15,25 +14,9 @@ namespace SavingsManagementSystem.Extensions
 				//registering of database service
 
 				// Get the value of the environment variable
-				var connectionString = string.Empty;
 
-				if (env.IsDevelopment())
-				{
-					connectionString = config.GetConnectionString("RenderPostgreConnection");
-				}
-				else
-				{
-					var builder = new NpgsqlConnectionStringBuilder
-					{
-						Host = Environment.GetEnvironmentVariable("Host"),
-						Port = Convert.ToInt32(Environment.GetEnvironmentVariable("Port")),
-						Database = Environment.GetEnvironmentVariable("Database"),
-						Username = Environment.GetEnvironmentVariable("Username"),
-						Password = Environment.GetEnvironmentVariable("Password")
-					};
-					connectionString = builder.ToString();
-
-				}
+				//connectionString = config.GetConnectionString("RenderPostgreConnection");
+				var connectionString = Environment.GetEnvironmentVariable("RenderPostgreConnection");
 				if (connectionString == null)
 				{
 					Console.WriteLine("it is not getting any env variable");
