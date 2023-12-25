@@ -15,16 +15,25 @@ namespace SavingsManagementSystem.Extensions
 				//registering of database service
 
 				// Get the value of the environment variable
-				var builder = new NpgsqlConnectionStringBuilder
-				{
-					Host = Environment.GetEnvironmentVariable("Host"),
-					Port = Convert.ToInt32(Environment.GetEnvironmentVariable("Port")),
-					Database = Environment.GetEnvironmentVariable("Database"),
-					Username = Environment.GetEnvironmentVariable("Username"),
-					Password = Environment.GetEnvironmentVariable("Password")
-				};
+				var connectionString = string.Empty;
 
-				string connectionString = builder.ToString();
+				if (env.IsDevelopment())
+				{
+					connectionString = config.GetConnectionString("RenderPostgreConnection");
+				}
+				else
+				{
+					var builder = new NpgsqlConnectionStringBuilder
+					{
+						Host = Environment.GetEnvironmentVariable("Host"),
+						Port = Convert.ToInt32(Environment.GetEnvironmentVariable("Port")),
+						Database = Environment.GetEnvironmentVariable("Database"),
+						Username = Environment.GetEnvironmentVariable("Username"),
+						Password = Environment.GetEnvironmentVariable("Password")
+					};
+					connectionString = builder.ToString();
+
+				}
 				if (connectionString == null)
 				{
 					Console.WriteLine("it is not getting any env variable");
@@ -32,12 +41,6 @@ namespace SavingsManagementSystem.Extensions
 				}
 				opt.UseNpgsql(connectionString);
 
-				/*var connectionString = config.GetConnectionString("RenderPostgreConnection");
-				if (connectionString == null)
-				{
-					Console.WriteLine("connection string is null");
-					return;
-			}*/
 
 				/*	if (env.IsDevelopment())
 					{
