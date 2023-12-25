@@ -42,7 +42,7 @@ namespace SavingsManagementSystem.Controllers
 			_logger.LogInformation("admin registration is executing.......");
 			try
 			{
-				var response = "it is working........";
+				var response = _userManager.Users.ToList();
 				if (response != null)
 				{
 					return Ok(response);
