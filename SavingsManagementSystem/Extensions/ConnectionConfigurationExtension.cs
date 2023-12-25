@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using SavingsManagementSystem.Data.Contexts;
 
 namespace SavingsManagementSystem.Extensions
@@ -17,22 +15,32 @@ namespace SavingsManagementSystem.Extensions
 
 				// Get the value of the environment variable
 				string connectionString = Environment.GetEnvironmentVariable("RenderPostgreConnection");
+
+				if (connectionString == null)
+				{
+					Console.WriteLine("it is not getting any env variable");
+					return;
+				}
+
+				/*var connectionString = config.GetConnectionString("RenderPostgreConnection");
 				if (connectionString == null)
 				{
 					Console.WriteLine("connection string is null");
 					return;
-				}
+			}*/
+				Console.WriteLine(connectionString);
+
 				opt.UseNpgsql(connectionString);
 
-			/*	if (env.IsDevelopment())
-				{
-					opt.UseSqlServer(config["ConnectionStrings:SqlConnectionString"]);
-                    Console.WriteLine("Local db used");
-                    return;
-				}
-                opt.UseInMemoryDatabase("InMemoryDatabase");
+				/*	if (env.IsDevelopment())
+					{
+						opt.UseSqlServer(config["ConnectionStrings:SqlConnectionString"]);
+						Console.WriteLine("Local db used");
+						return;
+					}
+					opt.UseInMemoryDatabase("InMemoryDatabase");
 
-				Console.WriteLine("In Memory database used");*/
+					Console.WriteLine("In Memory database used");*/
 			});
 		}
 	}
