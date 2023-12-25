@@ -19,7 +19,7 @@ namespace SavingsManagementSystem.Extensions
 				string variableValue = Environment.GetEnvironmentVariable("RenderPostgreConnection");
 
 				// Check if the variable exists and print its value
-				if (variableValue != null)
+				if (variableValue == null)
 				{
 					Console.WriteLine("it is not getting any env variable");
 					return;
