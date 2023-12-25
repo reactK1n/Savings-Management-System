@@ -14,9 +14,18 @@ namespace SavingsManagementSystem.Extensions
 			{
 
 				//registering of database service
-				//var connectionString = config["ConnectionStrings:RenderPostgreConnection"];
-				var connectionString = config.GetConnectionString("RenderPostgreConnection");
-				Console.WriteLine($"Connection String: {connectionString}");
+
+				// Get the value of the environment variable
+				string variableValue = Environment.GetEnvironmentVariable("RenderPostgreConnection");
+
+				// Check if the variable exists and print its value
+				if (variableValue != null)
+				{
+					Console.WriteLine("it is not getting any env variable");
+					return;
+				}
+
+				var connectionString = config.GetConnectionString(variableValue);
 				if (connectionString == null)
 				{
 					Console.WriteLine("connection string is null");
