@@ -15,7 +15,6 @@ namespace SavingsManagementSystem.Extensions
 				//registering of database service
 
 				// Get the value of the environment variable
-				//string connectionString = Environment.GetEnvironmentVariable("RenderPostgreConnection");
 				var builder = new NpgsqlConnectionStringBuilder
 				{
 					Host = Environment.GetEnvironmentVariable("Host"),
@@ -26,12 +25,12 @@ namespace SavingsManagementSystem.Extensions
 				};
 
 				string connectionString = builder.ToString();
-
 				if (connectionString == null)
 				{
 					Console.WriteLine("it is not getting any env variable");
 					return;
 				}
+				opt.UseNpgsql(connectionString);
 
 				/*var connectionString = config.GetConnectionString("RenderPostgreConnection");
 				if (connectionString == null)
@@ -39,9 +38,6 @@ namespace SavingsManagementSystem.Extensions
 					Console.WriteLine("connection string is null");
 					return;
 			}*/
-				Console.WriteLine(connectionString);
-
-				opt.UseNpgsql(connectionString);
 
 				/*	if (env.IsDevelopment())
 					{
