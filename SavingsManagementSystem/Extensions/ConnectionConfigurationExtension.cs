@@ -24,6 +24,7 @@ namespace SavingsManagementSystem.Extensions
 					Console.WriteLine("it is not getting any env variable");
 					return;
 				}
+				Console.WriteLine(variableValue);
 
 				var connectionString = config.GetConnectionString(variableValue);
 				if (connectionString == null)
