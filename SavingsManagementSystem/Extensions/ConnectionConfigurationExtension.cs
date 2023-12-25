@@ -13,17 +13,9 @@ namespace SavingsManagementSystem.Extensions
 
 				//registering of database service
 
-				// Get the value of the environment variable
-
 				//connectionString = config.GetConnectionString("RenderPostgreConnection");
-				var connectionString = Environment.GetEnvironmentVariable("RenderPostgreConnection");
-				if (connectionString == null)
-				{
-					Console.WriteLine("it is not getting any env variable");
-					return;
-				}
-				opt.UseNpgsql(connectionString);
 
+				opt.UseNpgsql(config["ConnectionStrings:RenderPostgreConnection"]);
 
 				/*	if (env.IsDevelopment())
 					{
