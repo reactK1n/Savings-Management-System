@@ -1,10 +1,6 @@
-﻿using Mailjet.Client.Resources;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SavingsManagementSystem.Common.DTOs;
-using SavingsManagementSystem.Model;
-using SavingsManagementSystem.Repository.UnitOfWork.Interfaces;
 using SavingsManagementSystem.Service.User.Interfaces;
 
 namespace SavingsManagementSystem.Controllers
@@ -15,21 +11,15 @@ namespace SavingsManagementSystem.Controllers
 	{
 		private readonly IAdminService _adminService;
 		private readonly ILogger<AdminController> _logger;
-		private readonly IUnitOfWork _unit;
-		private readonly UserManager<ApplicationUser> _userManager;
 
 
 
-		public AdminController(IAdminService adminService, 
-			ILogger<AdminController> logger, 
-			IUnitOfWork unit,
-			UserManager<ApplicationUser> userManager
+		public AdminController(IAdminService adminService,
+			ILogger<AdminController> logger
 )
 		{
 			_adminService = adminService;
 			_logger = logger;
-			_unit = unit;
-			_userManager = userManager;
 		}
 
 		[HttpGet]
@@ -42,7 +32,7 @@ namespace SavingsManagementSystem.Controllers
 			_logger.LogInformation("admin registration is executing.......");
 			try
 			{
-				var response = _userManager.Users.ToList();
+				var response = "it is working.........";
 				if (response != null)
 				{
 					return Ok(response);
@@ -81,7 +71,7 @@ namespace SavingsManagementSystem.Controllers
 			{
 				return BadRequest(ex.Message);
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				return BadRequest(ex.Message);
 			}
