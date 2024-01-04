@@ -39,5 +39,11 @@ namespace SavingsManagementSystem.Repository.Implementations
 		{
 			_dbSet.Remove(user);
 		}
+
+		public async Task<ApplicationUser> GetUserByRefreshTokenAsync(string refreshToken, string userId)
+		{
+			var user = await _dbSet.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken && u.Id == userId);
+			return user;
+		}
 	}
 }

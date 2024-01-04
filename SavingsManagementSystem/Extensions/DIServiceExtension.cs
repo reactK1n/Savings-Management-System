@@ -49,7 +49,7 @@ namespace SavingsManagementSystem.Extensions
 			services.AddScoped<IValidator<MailRequest>, MailRequestValidator>();
 			services.AddScoped<IValidator<ConfirmEmailRequest>, ConfirmEmailRequestValidator>();
 			services.AddScoped<IValidator<ChangePasswordRequest>, ChangePasswordRequestValidator>();
-
+			services.AddScoped<IValidator<RefreshTokenRequest>, RefreshTokenRequestValidation>();
 		}
 	}
 }
