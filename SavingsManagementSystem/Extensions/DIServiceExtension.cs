@@ -7,6 +7,8 @@ using SavingsManagementSystem.Repository.UnitOfWork.Implementations;
 using SavingsManagementSystem.Repository.UnitOfWork.Interfaces;
 using SavingsManagementSystem.Service.Authentication.Implementations;
 using SavingsManagementSystem.Service.Authentication.Interfaces;
+using SavingsManagementSystem.Service.Files.Implementations;
+using SavingsManagementSystem.Service.Files.Interfaces;
 using SavingsManagementSystem.Service.Mail.Implementations;
 using SavingsManagementSystem.Service.Mail.Interfaces;
 using SavingsManagementSystem.Service.User.Implementations;
@@ -29,6 +31,7 @@ namespace SavingsManagementSystem.Extensions
 			services.AddScoped<IVerificationTokenService, VerificationTokenService>();
 			services.AddScoped<IMailService, MailService>();
 			services.AddScoped<IMemberService, MemberService>();
+			services.AddScoped<IImageService, ImageService>();
 
 
 

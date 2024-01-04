@@ -280,7 +280,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			};
 
 			user.RefreshToken = response.NewRefreshToken;
-			user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(3);
+			user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
 			await _userManager.UpdateAsync(user);
 			await _unit.SaveChangesAsync();
