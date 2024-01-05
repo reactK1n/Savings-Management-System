@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SavingsManagementSystem.Common.CustomExceptions;
 using SavingsManagementSystem.Common.DTOs;
 using SavingsManagementSystem.Service.User.Interfaces;
+using System.Security.Claims;
 
 namespace SavingsManagementSystem.Controllers
 {
@@ -46,6 +48,36 @@ namespace SavingsManagementSystem.Controllers
 				return BadRequest();
 			}
 		}
+
+
+		[HttpPatch]
+		[Route("update")]
+		public async Task<IActionResult> UpdateUserAsync([FromForm] UpdateRequest request)
+		{
+			try
+			{
+				await _memberService.UpdateUserAsync(request);
+				return NoContent();
+			}
+			catch (ArgumentNullException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch (NotSupportedException ex)
+			{
+				return BadRequest("File Not Supported");
+			}
+			catch (MissingFieldException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch
+			{
+				return BadRequest("Updating not successful");
+			}
+		}
+
+
 	}
 }
 

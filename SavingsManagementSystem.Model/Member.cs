@@ -8,7 +8,7 @@ namespace SavingsManagementSystem.Model
 		public string UserId { get; set; }
 
 
-		//navigation propertie
+		//navigation properties
 		public ApplicationUser User { get; set; }
 
 		public ICollection<Saving> Savings { get; set; }

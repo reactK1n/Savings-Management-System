@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SavingsManagementSystem.Common.DTOs;
+using SavingsManagementSystem.Service.User.Implementations;
 using SavingsManagementSystem.Service.User.Interfaces;
 
 namespace SavingsManagementSystem.Controllers
@@ -101,6 +102,66 @@ namespace SavingsManagementSystem.Controllers
 			catch
 			{
 				return BadRequest();
+			}
+		}
+
+
+
+		[HttpPatch]
+		[Route("update")]
+		[Authorize(Policy = "Admin")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> UpdateUserAsync([FromForm] UpdateRequest request)
+		{
+			try
+			{
+				await _adminService.UpdateUserAsync(request);
+				return NoContent();
+			}
+			catch (ArgumentNullException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch (NotSupportedException ex)
+			{
+				return BadRequest("File Not Supported");
+			}
+			catch (MissingFieldException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch
+			{
+				return BadRequest("Updating not successful");
+			}
+		}
+
+
+		[HttpDelete]
+		[Route("Delete")]
+		[Authorize(Policy = "Admin")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> DeleteUser([FromQuery] string userId)
+		{
+			try
+			{
+				await _adminService.DeleteUserAsync(userId);
+				return NoContent();
+			}
+			catch (ArgumentNullException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+
+			catch (MissingFieldException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.InnerException?.Message);
 			}
 		}
 	}

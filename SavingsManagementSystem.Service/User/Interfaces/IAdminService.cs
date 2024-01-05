@@ -7,5 +7,9 @@ namespace SavingsManagementSystem.Service.User.Interfaces
 		Task<RegistrationResponse> RegisterAsync(AdminRegistrationRequest request);
 
 		Task SendMemberInviteAsync(string email);
+
+		Task UpdateUserAsync(UpdateRequest request);
+
+		Task DeleteUserAsync(string userId);
 	}
 }
