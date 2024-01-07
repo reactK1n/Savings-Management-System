@@ -1,4 +1,7 @@
-﻿namespace SavingsManagementSystem.Repository.Interfaces
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore;
+
+namespace SavingsManagementSystem.Repository.Interfaces
 {
 	public interface IGenericRepository<T> where T : class
 	{

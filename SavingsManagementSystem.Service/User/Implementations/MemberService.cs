@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SavingsManagementSystem.Common.CustomExceptions;
 using SavingsManagementSystem.Common.DTOs;
 using SavingsManagementSystem.Common.UserRole;
@@ -92,35 +93,44 @@ namespace SavingsManagementSystem.Service.User.Implementations
 			{
 				throw new ArgumentNullException("User not found");
 			}
-			var address = await _unit.Address.FetchAsync(user.AddressId);
+			var address = (await _unit.Address.FetchAsync(user.AddressId)) ?? new Address();
 
 			//assigning values
 			user.FirstName = !string.IsNullOrEmpty(request.FirstName) ? request.FirstName : user.FirstName;
 			user.LastName = !string.IsNullOrEmpty(request.LastName) ? request.LastName : user.LastName;
 			user.Email = !string.IsNullOrEmpty(request.Email) ? request.Email : user.Email;
 			user.UserName = !string.IsNullOrEmpty(request.UserName) ? request.UserName : user.UserName;
+			user.PhoneNumber = !string.IsNullOrEmpty(request.PhoneNumber) ? request.PhoneNumber : user.PhoneNumber;
 			user.ImageUri = request.Image != null ? await _image.UploadImageAsync(request.Image) : user.ImageUri;
+			address.Street = !string.IsNullOrEmpty(request.Street) ? request.Street : address.Street;
 			address.State = !string.IsNullOrEmpty(request.State) ? request.State : address.State;
 			address.City = !string.IsNullOrEmpty(request.City) ? request.City : address.City;
 
-			//updating entities
-			_unit.Address.Update(address);
-			var result = await _userManager.UpdateAsync(user);
+			var addressState = _unit.GetEntry(address).State;
+			var isAddressAdded = _unit.GetEntry(address).State == EntityState.Added;
+
+			// set the Id property of the address only if it's not set and the entity is being added
+			if (string.IsNullOrEmpty(address.Id) && !isAddressAdded)
+			{
+				user.AddressId = address.Id = Guid.NewGuid().ToString();
+				address.CreatedOn = DateTime.UtcNow;
+				addressState = EntityState.Added;
+			}
+
+			//updating or adding entities
+			if (addressState == EntityState.Added)
+			{
+				await _unit.Address.CreateAsync(address);
+			}
+			else
+			{
+				_unit.Address.Update(address);
+			}
+			_unit.User.Update(user);
 
 			//saving changes
 			await _unit.SaveChangesAsync();
-
-			if (!result.Succeeded)
-			{
-				var errors = string.Empty;
-				foreach (var error in result.Errors)
-				{
-					errors += error.Description + Environment.NewLine;
-				};
-				throw new MissingFieldException(errors);
-			}
 		}
 
-		
 	}
 }

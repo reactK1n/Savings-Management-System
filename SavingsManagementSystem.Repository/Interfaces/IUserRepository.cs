@@ -16,5 +16,7 @@ namespace SavingsManagementSystem.Repository.Interfaces
 		void Delete(ApplicationUser user);
 
 		Task<ApplicationUser> GetUserByRefreshTokenAsync(string refreshToken, string userId);
+
+
 	}
 }

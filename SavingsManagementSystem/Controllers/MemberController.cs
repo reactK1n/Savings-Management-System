@@ -52,6 +52,7 @@ namespace SavingsManagementSystem.Controllers
 
 		[HttpPatch]
 		[Route("update")]
+		[Authorize(Policy = "Member")]
 		public async Task<IActionResult> UpdateUserAsync([FromForm] UpdateRequest request)
 		{
 			try
