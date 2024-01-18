@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SavingsManagementSystem.Common.Model;
 using SavingsManagementSystem.Data.Contexts;
 
 namespace SavingsManagementSystem.Extensions
@@ -27,6 +28,8 @@ namespace SavingsManagementSystem.Extensions
 
 					Console.WriteLine("In Memory database used");*/
 			});
+
+			services.Configure<StripeSettings>(config.GetSection("StripeSettings"));
 		}
 	}
 }

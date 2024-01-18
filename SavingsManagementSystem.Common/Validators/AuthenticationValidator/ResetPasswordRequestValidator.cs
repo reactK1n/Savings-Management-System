@@ -4,9 +4,9 @@ using SavingsManagementSystem.Common.Validators.ValidatorSettings;
 
 namespace SavingsManagementSystem.Common.Validators.AuthenticationValidator
 {
-	public class ResetPasswordRequestValidation : AbstractValidator<ResetPasswordRequest>
+	public class ResetPasswordRequestValidator : AbstractValidator<ResetPasswordRequest>
 	{
-		public ResetPasswordRequestValidation()
+		public ResetPasswordRequestValidator()
 		{
 			RuleFor(user => user.Password).PassWord();
 

@@ -4,9 +4,9 @@ using SavingsManagementSystem.Common.Validators.ValidatorSettings;
 
 namespace SavingsManagementSystem.Common.Validators.AuthenticationValidator
 {
-	public class LoginRequestValidation : AbstractValidator<LoginRequest>
+	public class LoginRequestValidator : AbstractValidator<LoginRequest>
 	{
-		public LoginRequestValidation() 
+		public LoginRequestValidator() 
 		{
 			RuleFor(user => user.Email).EmailAddress();
 			RuleFor(user => user.Password).PassWord();
