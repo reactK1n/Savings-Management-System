@@ -47,8 +47,8 @@ namespace SavingsManagementSystem.Service.User.Implementations
 
 		public async Task<RegistrationResponse> RegisterAsync(MemberRegistrationRequest request)
 		{
-			var emailUser = _userManager.FindByEmailAsync(request.Email);
-			if (emailUser.Result != null)
+			var emailUser = await _userManager.FindByEmailAsync(request.Email);
+			if (emailUser != null)
 			{
 				throw new AlreadyExistsException("email has already registered in our database, Login To your Account ");
 			}
@@ -68,14 +68,19 @@ namespace SavingsManagementSystem.Service.User.Implementations
 				UserName = request.Username,
 				EmailConfirmed = true
 			};
+			var member = new Member
+			{
+				UserId = user.Id,
+				User = user
+			};
 
 			var response = await _auth.Register(user, request.Password, UserRole.Member);
 			if (response == null)
 			{
 				throw new ArgumentNullException("Unable to Register User at the moment");
 			}
+			await _unit.Member.CreateAsync(member);
 
-			await _unit.Member.Create(user.Id);
 			//update token IsUsed value
 			vToken.IsUsed = true;
 			_unit.VerificationToken.Update(vToken);

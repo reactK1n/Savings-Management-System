@@ -4,7 +4,7 @@ namespace SavingsManagementSystem.Repository.Interfaces
 {
 	public interface IMemberRepository
 	{
-		Task Create(string userId);
+		Task CreateAsync(Member member);
 
 		ICollection<Member> Fetch();
 

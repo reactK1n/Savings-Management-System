@@ -36,7 +36,7 @@ namespace SavingsManagementSystem.Controllers
 			_logger.LogInformation("admin registration is executing.......");
 			try
 			{
-				var response = _unit.User.FetchUser();
+				var response = _unit.Member.Fetch();
 				if (response != null)
 				{
 					return Ok(response);
@@ -84,7 +84,7 @@ namespace SavingsManagementSystem.Controllers
 
 		[HttpPost]
 		[Route("SendInvite")]
-		[Authorize(Policy = "Admin")]
+		//[Authorize(Policy = "Admin")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> SendInvite([FromQuery] string email)

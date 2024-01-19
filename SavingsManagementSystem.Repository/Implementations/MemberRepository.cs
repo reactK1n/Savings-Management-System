@@ -14,12 +14,8 @@ namespace SavingsManagementSystem.Repository.Implementations
 			_dbSet = context.Set<Member>();
 		}
 
-		public async Task Create(string userId)
+		public async Task CreateAsync(Member member)
 		{
-			var member = new Member
-			{
-				UserId = userId
-			};
 			await _dbSet.AddAsync(member);
 		}
 
