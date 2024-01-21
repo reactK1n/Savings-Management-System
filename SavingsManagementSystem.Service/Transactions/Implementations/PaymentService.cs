@@ -78,7 +78,7 @@ namespace SavingsManagementSystem.Service.Transactions.Implementations
 				SessionId = session.Id,
 				SessionUrl = session.Url,
 				SessionStatus = session.Status,
-				SessionAmount = (long)session.AmountSubtotal
+				SessionAmount = (long)session.AmountSubtotal / 100
 			};
 
 			return response;

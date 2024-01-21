@@ -16,9 +16,9 @@ namespace SavingsManagementSystem.Extensions
 
 				//connectionString = config.GetConnectionString("RenderPostgreConnection");
 
-				//opt.UseNpgsql(config["ConnectionStrings:RenderPostgreConnection"]);
+				opt.UseNpgsql(config["ConnectionStrings:RenderPostgreConnection"]);
 
-				if (env.IsDevelopment())
+				/*if (env.IsDevelopment())
 				{
 					opt.UseSqlServer(config["ConnectionStrings:SqlConnectionString"]);
 					Console.WriteLine("Local db used");
@@ -26,7 +26,7 @@ namespace SavingsManagementSystem.Extensions
 				}
 				opt.UseInMemoryDatabase("InMemoryDatabase");
 
-				Console.WriteLine("In Memory database used");
+				Console.WriteLine("In Memory database used");*/
 			});
 
 			services.Configure<StripeSettings>(config.GetSection("StripeSettings"));

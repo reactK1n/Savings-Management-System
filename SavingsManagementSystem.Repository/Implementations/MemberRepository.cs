@@ -26,7 +26,7 @@ namespace SavingsManagementSystem.Repository.Implementations
 
 		public async Task<Member> FetchByUserIdAsync(string userId)
 		{
-			var user = await _dbSet.FindAsync(userId);
+			var user = await _dbSet.FirstOrDefaultAsync(m => m.UserId == userId);
 			return user;
 		}
 
