@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SavingsManagementSystem.Common.DTOs;
-using SavingsManagementSystem.Model;
 using SavingsManagementSystem.Repository.UnitOfWork.Interfaces;
-using SavingsManagementSystem.Service.User.Implementations;
 using SavingsManagementSystem.Service.User.Interfaces;
 
 namespace SavingsManagementSystem.Controllers
@@ -18,7 +15,7 @@ namespace SavingsManagementSystem.Controllers
 		private readonly IUnitOfWork _unit;
 
 		public AdminController(IAdminService adminService,
-			ILogger<AdminController> logger ,
+			ILogger<AdminController> logger,
 			IUnitOfWork unit)
 		{
 			_adminService = adminService;
