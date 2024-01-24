@@ -4,9 +4,9 @@ using SavingsManagementSystem.Common.Validators.ValidatorSettings;
 
 namespace SavingsManagementSystem.Common.Validators.AuthenticationValidator
 {
-	public class MemberRegistrationRequestValidation : AbstractValidator<MemberRegistrationRequest>
+	public class AdminRegistrationRequestValidator : AbstractValidator<AdminRegistrationRequest>
 	{
-		public MemberRegistrationRequestValidation()
+		public AdminRegistrationRequestValidator() 
 		{
 			RuleFor(user => user.FirstName).HumanName();
 			RuleFor(user => user.LastName).HumanName();
@@ -14,8 +14,6 @@ namespace SavingsManagementSystem.Common.Validators.AuthenticationValidator
 			RuleFor(user => user.Username).MinimumLength(1);
 			RuleFor(user => user.PhoneNumber).PhoneNumber();
 			RuleFor(user => user.Password).PassWord();
-			RuleFor(user => user.Token).NotEmpty().NotNull();
 		}
 	}
 }
-

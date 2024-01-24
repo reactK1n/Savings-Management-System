@@ -188,5 +188,35 @@ namespace SavingsManagementSystem.Controllers
 		}
 
 
+		[HttpPatch]
+		[Route("Refresh_Token")]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
+		{
+			try
+			{
+				var response = await _authServices.RefreshTokenAsync(request);
+				if (response != null)
+				{
+					return Ok(response);
+				}
+				return BadRequest("Invalid request or failed to refresh token.");
+			}
+			catch (ArgumentNullException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch (SessionExpiredException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch
+			{
+				return BadRequest();
+			}
+		}
+
 	}
 }

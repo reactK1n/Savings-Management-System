@@ -20,5 +20,7 @@ namespace SavingsManagementSystem.Service.Authentication.Interfaces
 
 		Task VerifyLinkAsync(string token);
 
+		Task<RefreshTokenResponse> RefreshTokenAsync(RefreshTokenRequest token);
+
 	}
 }

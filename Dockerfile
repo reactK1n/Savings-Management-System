@@ -32,5 +32,7 @@ COPY --from=publish /app/publish .
 COPY --from=publish /src/SavingsManagementSystem/StaticFiles/Html/ForgetPassword.html ./
 COPY --from=publish /src/SavingsManagementSystem/StaticFiles/Html/ConfirmEmail.html ./
 COPY --from=publish /src/SavingsManagementSystem/StaticFiles/Html/MemberInvite.html ./
+COPY --from=publish /src/SavingsManagementSystem/StaticFiles/Html/PaymentReceipt.html ./
+
 
 ENTRYPOINT ["dotnet", "SavingsManagementSystem.dll"]

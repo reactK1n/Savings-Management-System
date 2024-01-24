@@ -49,7 +49,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 		public string GenerateRefreshToken()
 		{
-			// Generate a custom token by concatenating two new Guids
+			// Generate a custom token with Guid
 			string refreshToken = Guid.NewGuid().ToString();
 
 			// Return the custom token

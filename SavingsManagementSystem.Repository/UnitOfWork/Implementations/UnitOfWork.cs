@@ -1,4 +1,6 @@
-﻿using SavingsManagementSystem.Data.Contexts;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore;
+using SavingsManagementSystem.Data.Contexts;
 using SavingsManagementSystem.Repository.Implementations;
 using SavingsManagementSystem.Repository.Interfaces;
 using SavingsManagementSystem.Repository.UnitOfWork.Interfaces;
@@ -56,9 +58,25 @@ namespace SavingsManagementSystem.Repository.UnitOfWork.Implementations
 			get => _transaction ??= new TransactionRepository(_context);
 		}
 
+		public EntityEntry<TEntity> GetEntry<TEntity>(TEntity entity) where TEntity : class
+		{
+			return _context.Entry(entity);
+		}
+
+		public EntityEntry<TEntity> AttachEntity<TEntity>(TEntity entity) where TEntity : class
+		{
+			return _context.Attach(entity);
+		}
+
 		public async Task SaveChangesAsync()
 		{
 			await _context.SaveChangesAsync();
+		}
+
+		public void Dispose()
+		{
+			_context.Dispose();
+			GC.SuppressFinalize(this);
 		}
 	}
 }

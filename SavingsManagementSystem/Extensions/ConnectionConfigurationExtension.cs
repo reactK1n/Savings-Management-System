@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SavingsManagementSystem.Common.Model;
 using SavingsManagementSystem.Data.Contexts;
 
 namespace SavingsManagementSystem.Extensions
@@ -17,16 +18,18 @@ namespace SavingsManagementSystem.Extensions
 
 				opt.UseNpgsql(config["ConnectionStrings:RenderPostgreConnection"]);
 
-				/*	if (env.IsDevelopment())
-					{
-						opt.UseSqlServer(config["ConnectionStrings:SqlConnectionString"]);
-						Console.WriteLine("Local db used");
-						return;
-					}
-					opt.UseInMemoryDatabase("InMemoryDatabase");
+				/*if (env.IsDevelopment())
+				{
+					opt.UseSqlServer(config["ConnectionStrings:SqlConnectionString"]);
+					Console.WriteLine("Local db used");
+					return;
+				}
+				opt.UseInMemoryDatabase("InMemoryDatabase");
 
-					Console.WriteLine("In Memory database used");*/
+				Console.WriteLine("In Memory database used");*/
 			});
+
+			services.Configure<StripeSettings>(config.GetSection("StripeSettings"));
 		}
 	}
 }

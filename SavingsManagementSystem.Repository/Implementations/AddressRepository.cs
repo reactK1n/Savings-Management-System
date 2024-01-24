@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SavingsManagementSystem.Data.Contexts;
 using SavingsManagementSystem.Model;
 using SavingsManagementSystem.Repository.Interfaces;
@@ -8,8 +9,10 @@ namespace SavingsManagementSystem.Repository.Implementations
 	public class AddressRepository : GenericRepository<Address>, IAddressRepository
 	{
         private readonly DbSet<Address> _dbSet;
-        public AddressRepository(SavingsDBContext context) : base(context)
+		private readonly SavingsDBContext _context;
+		public AddressRepository(SavingsDBContext context) : base(context)
         {
+			_context = context;
             _dbSet = context.Set<Address>();
         }
 
@@ -33,5 +36,6 @@ namespace SavingsManagementSystem.Repository.Implementations
 		{
 			_dbSet.Remove(address);
 		}
+
 	}
 }

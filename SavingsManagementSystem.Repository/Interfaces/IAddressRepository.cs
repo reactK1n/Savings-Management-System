@@ -1,4 +1,5 @@
-﻿using SavingsManagementSystem.Model;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using SavingsManagementSystem.Model;
 
 namespace SavingsManagementSystem.Repository.Interfaces
 {

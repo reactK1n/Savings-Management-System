@@ -79,7 +79,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			var refreshToken = _token.GenerateRefreshToken();
 			user.RefreshToken = refreshToken;
 			user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); //sets refresh token for 7 days
-																   //updating our db
+																	  //updating our db
 			await _userManager.UpdateAsync(user);
 			await _unit.SaveChangesAsync();
 
@@ -113,7 +113,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			// Load the email template from the file
 			var htmlPath = Path.Combine("StaticFiles", "Html", "ForgetPassword.html");
 			var emailTemplate = File.ReadAllText(htmlPath);
-            var queryParams = $"userId={user.Id}&token={encodedToken}"; // Already encoded
+			var queryParams = $"userId={user.Id}&token={encodedToken}"; // Already encoded
 			var resetLink = LinkGenerator.GenerateUrl("VerifyLink", "Auth", queryParams);
 
 			// Replacing the {{RESET_LINK}} placeholder with the actual reset link
@@ -180,7 +180,7 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 
 		public async Task<string> ChangePasswordAsync(ChangePasswordRequest request)
 		{
-			var userId =  _httpContextAccessor.HttpContext.User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier).Value;
+			var userId = _httpContextAccessor.HttpContext.User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier).Value;
 			var user = await _userManager.FindByIdAsync(userId);
 			if (user == null)
 			{
@@ -253,6 +253,40 @@ namespace SavingsManagementSystem.Service.Authentication.Implementations
 			{
 				throw new InvalidOperationException("Link Has been Used");
 			}
+		}
+
+		public async Task<RefreshTokenResponse> RefreshTokenAsync(RefreshTokenRequest token)
+		{
+			var userId = token.UserId;
+			var refreshToken = token.RefreshToken;
+
+			var user = await _unit.User.GetUserByRefreshTokenAsync(refreshToken.ToString(), userId);
+
+			if (user == null)
+			{
+				throw new ArgumentNullException($"User with userId: {userId} and refreshToken: {refreshToken} not found.");
+			}
+
+			if (user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+			{
+				throw new SessionExpiredException();
+			}
+
+			var response = new RefreshTokenResponse
+			{
+
+				NewJwtAccessToken = await _token.GetToken(user),
+				NewRefreshToken = _token.GenerateRefreshToken()
+			};
+
+			user.RefreshToken = response.NewRefreshToken;
+			user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+
+			await _userManager.UpdateAsync(user);
+			await _unit.SaveChangesAsync();
+			
+			return response;
+
 		}
 	}
 }

@@ -14,12 +14,8 @@ namespace SavingsManagementSystem.Repository.Implementations
 			_dbSet = context.Set<Member>();
 		}
 
-		public async Task Create(string userId)
+		public async Task CreateAsync(Member member)
 		{
-			var member = new Member
-			{
-				UserId = userId
-			};
 			await _dbSet.AddAsync(member);
 		}
 
@@ -30,7 +26,7 @@ namespace SavingsManagementSystem.Repository.Implementations
 
 		public async Task<Member> FetchByUserIdAsync(string userId)
 		{
-			var user = await _dbSet.FindAsync(userId);
+			var user = await _dbSet.FirstOrDefaultAsync(m => m.UserId == userId);
 			return user;
 		}
 

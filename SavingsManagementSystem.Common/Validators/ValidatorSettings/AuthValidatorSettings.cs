@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using System.Text.RegularExpressions;
 
 namespace SavingsManagementSystem.Common.Validators.ValidatorSettings
 {
@@ -35,6 +36,17 @@ namespace SavingsManagementSystem.Common.Validators.ValidatorSettings
 
 			return options;
 		}
+
+		public static IRuleBuilderOptions<T, string> IsDigit<T>(this IRuleBuilder<T, string> ruleBuilder)
+		{
+			var options = ruleBuilder
+				.Must(value => string.IsNullOrEmpty(value) || Regex.IsMatch(value, @"^\d+$"))
+				.WithMessage("Please input only numbers.")
+				.GreaterThan("0").WithMessage("It must be greater than zero.");
+
+			return options;
+		}
+
 
 	}
 }
