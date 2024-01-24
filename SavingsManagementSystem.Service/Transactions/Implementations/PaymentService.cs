@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 using SavingsManagementSystem.Common.DTOs;
-using SavingsManagementSystem.Common.Model;
 using SavingsManagementSystem.Common.Utilities;
 using SavingsManagementSystem.Model;
 using SavingsManagementSystem.Repository.UnitOfWork.Interfaces;
@@ -18,20 +17,21 @@ namespace SavingsManagementSystem.Service.Transactions.Implementations
 	public class PaymentService : IPaymentService
 
 	{
-		private readonly StripeSettings _stripeSettings;
 		private readonly IUnitOfWork _unit;
 		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly UserManager<ApplicationUser> _user;
 		private readonly IMailService _mailService;
+		private readonly IConfiguration _config;
 
-		public PaymentService(IOptions<StripeSettings> stripeSettings,
+		public PaymentService(
 			IUnitOfWork unit,
 			IHttpContextAccessor httpContextAccessor,
 			UserManager<ApplicationUser> user,
-			IMailService mailService)
+			IMailService mailService,
+			IConfiguration config)
 		{
-			_stripeSettings = stripeSettings.Value;
-			StripeConfiguration.ApiKey = _stripeSettings.SecretKey;
+			_config = config;
+			StripeConfiguration.ApiKey = _config["StripeSettings:SecretKey"];
 			_unit = unit;
 			_httpContextAccessor = httpContextAccessor;
 			_user = user;
