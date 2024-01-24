@@ -11,7 +11,7 @@ using SavingsManagementSystem.Service.Files.Implementations;
 using SavingsManagementSystem.Service.Files.Interfaces;
 using SavingsManagementSystem.Service.Mail.Implementations;
 using SavingsManagementSystem.Service.Mail.Interfaces;
-using SavingsManagementSystem.Service.Transactions.Implementations;
+//using SavingsManagementSystem.Service.Transactions.Implementations;
 using SavingsManagementSystem.Service.Transactions.Interfaces;
 using SavingsManagementSystem.Service.User.Implementations;
 using SavingsManagementSystem.Service.User.Interfaces;
@@ -34,7 +34,7 @@ namespace SavingsManagementSystem.Extensions
 			services.AddScoped<IMailService, MailService>();
 			services.AddScoped<IMemberService, MemberService>();
 			services.AddScoped<IImageService, ImageService>();
-			services.AddScoped<IPaymentService, PaymentService>();
+			//services.AddScoped<IPaymentService, PaymentService>();
 
 
 
