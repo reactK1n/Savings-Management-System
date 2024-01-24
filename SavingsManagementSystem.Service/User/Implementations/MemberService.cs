@@ -74,12 +74,12 @@ namespace SavingsManagementSystem.Service.User.Implementations
 				User = user
 			};
 
+			await _unit.Member.CreateAsync(member);
 			var response = await _auth.Register(user, request.Password, UserRole.Member);
 			if (response == null)
 			{
 				throw new ArgumentNullException("Unable to Register User at the moment");
 			}
-			await _unit.Member.CreateAsync(member);
 
 			//update token IsUsed value
 			vToken.IsUsed = true;
