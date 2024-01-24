@@ -25,15 +25,14 @@ namespace SavingsManagementSystem.Controllers
 
 		[HttpGet]
 		[Route("/")]
-		[Route("allUser")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> AllUser()
+		public async Task<IActionResult> WelcomeMessage()
 		{
 			_logger.LogInformation("admin registration is executing.......");
 			try
 			{
-				var response = _unit.User.FetchUser();
+				var response = "Welcome to thinkact savings management system Api \n add  /swagger/index.html for the full Api";
 				if (response != null)
 				{
 					return Ok(response);
