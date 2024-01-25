@@ -59,7 +59,7 @@ namespace SavingsManagementSystem.Controllers
 			try
 			{
 				await _paymentService.PaymentConfirmationAsync(request);
-				return NoContent();
+				return Ok("Payment Completed");
 			}
 
 			catch (ArgumentNullException ex)
@@ -70,9 +70,9 @@ namespace SavingsManagementSystem.Controllers
 			{
 				return BadRequest(ex.Message);
 			}
-			catch
+			catch(Exception ex)
 			{
-				return BadRequest();
+				return BadRequest(ex.Message);
 			}
 		}
 	}

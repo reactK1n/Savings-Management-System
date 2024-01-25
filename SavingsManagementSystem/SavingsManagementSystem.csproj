@@ -49,6 +49,9 @@
     <None Update="StaticFiles\Html\MemberInvite.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="StaticFiles\Html\PaymentReceipt.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
