@@ -137,7 +137,7 @@ namespace SavingsManagementSystem.Service.Transactions.Implementations
 					Body = emailTemplate
 				};
 
-				//await _mailService.SendEmailAsync(mailRequest);
+				await _mailService.SendEmailAsync(mailRequest);
 				await _unit.Transaction.Create(transaction);
 				await _unit.SaveChangesAsync();
 			}
