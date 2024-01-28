@@ -75,5 +75,104 @@ namespace SavingsManagementSystem.Controllers
 				return BadRequest(ex.Message);
 			}
 		}
+
+
+
+		[HttpGet]
+		[Authorize(Policy = "Admin")]
+		[Route("Get_All_Members_Payment")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> GetAllPayment()
+		{
+			try
+			{
+				var response = await _paymentService.GetAllPaymentsAsync();
+				return Ok(response);
+			}
+
+			catch (ArgumentNullException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+
+		[HttpGet]
+		[Authorize(Policy = "Member")]
+		[Route("Get_Member_Payment")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> GetPayments()
+		{
+			try
+			{
+				var response = await _paymentService.GetPaymentsWithAuthorizedMenberAsync();
+				return Ok(response);
+			}
+
+			catch (ArgumentNullException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+
+
+		[HttpGet]
+		[Authorize(Policy = "Admin")]
+		[Route("Get_Members_Total_Payment")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> GetMembersTotalPayment()
+		{
+			try
+			{
+				var response = await _paymentService.GetTotalPayAsync();
+				return Ok(response);
+			}
+
+			catch (ArgumentNullException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+
+
+		[HttpGet]
+		[Authorize(Policy = "Member")]
+		[Route("Get_Member_Total_Payment")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> GetMemberTotalPayment(string memberId)
+		{
+			try
+			{
+				var response = await _paymentService.GetTotalPayWithIdAsync(memberId);
+				return Ok(response);
+			}
+
+			catch (ArgumentNullException ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
 	}
 }

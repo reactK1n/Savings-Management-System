@@ -10,6 +10,8 @@ namespace SavingsManagementSystem.Repository.Interfaces
 
 		Task<Member> FetchByUserIdAsync(string userId);
 
+		Task<Member> FetchByMemberIdAsync(string memberId);
+
 		Task<Member> FetchByOtpAsync(string otpId);
 
 		void Update(Member member);

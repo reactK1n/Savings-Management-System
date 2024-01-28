@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Mailjet.Client.Resources;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -141,6 +142,64 @@ namespace SavingsManagementSystem.Service.Transactions.Implementations
 				await _unit.Transaction.Create(transaction);
 				await _unit.SaveChangesAsync();
 			}
+		}
+
+		public async Task<ICollection<TransactionResponse>> GetAllPaymentsAsync()
+		{
+			var payments = _unit.Transaction.Fetch() ?? throw new ArgumentNullException($"No Payment exist yet");
+			ICollection<TransactionResponse> allPays = new List<TransactionResponse>(){ };
+			foreach (var payment in payments)
+			{
+				var member = await _unit.Member.FetchByMemberIdAsync(payment.MemberId) ?? throw new ArgumentNullException($"Member with {payment} does not exist");
+				var user = await _user.FindByIdAsync(member.UserId) ?? throw new ArgumentNullException($"User with {member.UserId} does not exist");
+
+				var pay = new TransactionResponse
+				{
+					Id = member.Id,
+					FullName = $"{user.FirstName} {user.LastName}",
+					Email = user.Email,
+					Amount = payment.Amount,
+					SavingsDate = payment.CreatedOn.ToShortDateString(),
+				};
+
+				allPays.Add(pay);
+			}
+			return allPays;
+		}
+
+		public async Task<string> GetTotalPayAsync()
+		{
+			var totalPay = _unit.Transaction.Fetch().Sum(payment => payment.Amount);
+			return $"{totalPay:F2}";
+		}
+
+		public async Task<string> GetTotalPayWithIdAsync(string memberId)
+		{
+			var totalPay = await _unit.Transaction.FetchTransactionsAsync(memberId) ?? throw new ArgumentNullException($"Payment with {memberId} does not exist");
+			return $"{totalPay.Sum(payment => payment.Amount):F2}";
+		}
+
+		public async Task<ICollection<TransactionResponse>> GetPaymentsWithAuthorizedMenberAsync()
+		{
+			var userId = _httpContextAccessor.HttpContext.User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier).Value;
+			var user = await _user.FindByIdAsync(userId) ?? throw new ArgumentNullException($"User with {userId} does not exist");
+			var member = await _unit.Member.FetchByUserIdAsync(userId) ?? throw new ArgumentNullException($"Member with {userId} does not exist");
+			var payments = await _unit.Transaction.FetchTransactionsAsync(member.Id);
+			ICollection<TransactionResponse> allPays = new List<TransactionResponse>() { };
+			foreach (var payment in payments)
+			{
+				var pay = new TransactionResponse
+				{
+					Id = member.Id,
+					FullName = $"{user.FirstName} {user.LastName}",
+					Email = user.Email,
+					Amount = payment.Amount,
+					SavingsDate = payment.CreatedOn.ToShortDateString(),
+				};
+
+				allPays.Add(pay);
+			}
+			return allPays;
 		}
 
 

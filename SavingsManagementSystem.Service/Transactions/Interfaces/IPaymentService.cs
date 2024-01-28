@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Mailjet.Client.Resources;
+using Microsoft.AspNetCore.Mvc;
 using SavingsManagementSystem.Common.DTOs;
 
 namespace SavingsManagementSystem.Service.Transactions.Interfaces
@@ -7,5 +8,13 @@ namespace SavingsManagementSystem.Service.Transactions.Interfaces
 	{
 		Task<InitiatePaymentResponse> InitiatePaymentSessionAsync([FromBody] PaymentRequest model);
 		Task PaymentConfirmationAsync(PayConfirmationRequest request);
+
+		Task<ICollection<TransactionResponse>> GetAllPaymentsAsync();
+
+		Task<string> GetTotalPayAsync();
+
+		Task<string> GetTotalPayWithIdAsync(string memberId);
+
+		Task<ICollection<TransactionResponse>> GetPaymentsWithAuthorizedMenberAsync();
 	}
 }

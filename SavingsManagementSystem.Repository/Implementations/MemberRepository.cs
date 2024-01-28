@@ -30,6 +30,12 @@ namespace SavingsManagementSystem.Repository.Implementations
 			return user;
 		}
 
+		public async Task<Member> FetchByMemberIdAsync(string memberId)
+		{
+			var member = await _dbSet.FirstOrDefaultAsync(m => m.Id == memberId);
+			return member;
+		}
+
 		public async Task<Member> FetchByOtpAsync(string otpId)
 		{
 			var user = await _dbSet.FindAsync(otpId);
